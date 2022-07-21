@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QFileInfoList>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -15,7 +16,13 @@ public:
   MainWindow(QWidget *parent = nullptr);
   ~MainWindow();
 
+public slots:
+  void OnButtonNext();
+  void LoadImage(int n);
+
 private:
   Ui::MainWindow *ui;
+  QFileInfoList  m_listInputFiles;
+  int m_nIndex;
 };
 #endif // MAINWINDOW_H

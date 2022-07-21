@@ -11,13 +11,15 @@ CONFIG += c++17
 SOURCES += \
     DialogSelectFolder.cpp \
     DialogWelcome.cpp \
+    WidgetImageView.cpp \
     main.cpp \
     MainWindow.cpp
 
 HEADERS += \
     DialogSelectFolder.h \
     DialogWelcome.h \
-    MainWindow.h
+    MainWindow.h \
+    WidgetImageView.h
 
 FORMS += \
     DialogSelectFolder.ui \
