@@ -17,6 +17,13 @@ bool WidgetImageView::LoadImage(const QString& filename, const QString& mask)
   if (!image.isNull())
   {
     m_image = image;
+    if (!mask.isEmpty())
+    {
+      QImage mask_image(mask);
+      QPainter p(&m_image);
+      p.setCompositionMode(QPainter::CompositionMode_Multiply);
+      p.drawImage(0, 0, mask_image);
+    }
     m_sFilename = filename;
     m_dScale = 1.0;
     m_ptOffset = QPoint(0,0);
