@@ -8,7 +8,7 @@
 #include <QFileInfo>
 #include <QMessageBox>
 
-#define WND_TITLE "Retrospective Registration"
+#define WND_TITLE "Connected Components"
 
 MainWindow::MainWindow(QWidget *parent)
   : QMainWindow(parent)
@@ -16,8 +16,10 @@ MainWindow::MainWindow(QWidget *parent)
 {
   ui->setupUi(this);
 
+  ui->widgetImageView->SetEditMode(WidgetImageView::EM_REGION);
+
   connect(ui->pushButtonNext, SIGNAL(clicked(bool)), SLOT(OnButtonNext()));
-  connect(ui->pushButtonRegister, SIGNAL(clicked(bool)), SLOT(OnButtonRegister()));
+  connect(ui->pushButtonCreateMask, SIGNAL(clicked(bool)), SLOT(OnButtonCreateMask()));
   connect(ui->pushButtonClear, SIGNAL(clicked(bool)), SLOT(OnButtonClear()));
 
   setWindowTitle(WND_TITLE);
@@ -38,13 +40,15 @@ MainWindow::MainWindow(QWidget *parent)
     return;
   }
 
-  m_nNumberOfExpectedPoints = dlgSelect.IsFourPoint()?4:2;
   show();
 
-  QString input_path = dlgSelect.GetInputPath();
-  m_listInputFiles = QDir(input_path).entryInfoList(QDir::Files, QDir::Name);
+  QString path = dlgSelect.GetInputPath();
+  m_listInputFiles = QDir(path).entryInfoList(QDir::Files, QDir::Name);
 
-  if (!m_listInputFiles.isEmpty())
+  path = dlgSelect.GetMaskPath();
+  m_listMaskFiles = QDir(path).entryInfoList(QDir::Files, QDir::Name);
+
+  if (!m_listInputFiles.isEmpty() && !m_listMaskFiles.isEmpty())
     LoadImage(m_nIndex);
 }
 
@@ -62,24 +66,15 @@ void MainWindow::OnButtonNext()
   }
   else
   {
-    if (QMessageBox::question(this, "", "No more images to register. Quit the program?") == QMessageBox::Yes)
+    if (QMessageBox::question(this, "", "No more images to process. Quit the program?") == QMessageBox::Yes)
       qApp->quit();
   }
 }
 
-void MainWindow::OnButtonRegister()
+void MainWindow::OnButtonCreateMask()
 {
-  bool bOK;
-  double val = ui->lineEditRulerLength->text().trimmed().toDouble(&bOK);
-  if (ui->widgetImageView->GetNumberOfEditedPoints().size() < m_nNumberOfExpectedPoints)
-    QMessageBox::warning(this, "", "Please click on the image to add another point");
-  else if (!bOK || val <= 0)
-    QMessageBox::warning(this, "", "Please enter a valid value for ruler length");
-  else
-  {
-    // execute script
-    ui->pushButtonNext->setEnabled(true);
-  }
+  // execute script here
+  ui->pushButtonNext->setEnabled(true);
 }
 
 void MainWindow::OnButtonClear()
@@ -90,5 +85,5 @@ void MainWindow::OnButtonClear()
 
 void MainWindow::LoadImage(int n)
 {
-  ui->widgetImageView->LoadImage(m_listInputFiles[m_nIndex].absoluteFilePath());
+  ui->widgetImageView->LoadImage(m_listInputFiles[n].absoluteFilePath(), m_listMaskFiles[n].absoluteFilePath());
 }

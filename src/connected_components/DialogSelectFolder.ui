@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>575</width>
-    <height>282</height>
+    <width>568</width>
+    <height>308</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -40,7 +40,7 @@
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>Select input directory for uncorrected images</string>
+        <string>Select the directory with input images</string>
        </property>
       </widget>
      </item>
@@ -90,12 +90,62 @@
      <item>
       <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>Select output directory for corrected images</string>
+        <string>Select the directory with input masks</string>
        </property>
       </widget>
      </item>
      <item>
       <spacer name="horizontalSpacer_4">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButtonMask">
+       <property name="text">
+        <string>Choose Folder</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QLineEdit" name="lineEditPathMask"/>
+   </item>
+   <item>
+    <spacer name="verticalSpacer_3">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeType">
+      <enum>QSizePolicy::Fixed</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>12</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_5">
+     <item>
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Select the directory to save output masks</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_7">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -118,79 +168,6 @@
    </item>
    <item>
     <widget class="QLineEdit" name="lineEditPathOutput"/>
-   </item>
-   <item>
-    <spacer name="verticalSpacer_3">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeType">
-      <enum>QSizePolicy::Fixed</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>12</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_4">
-     <item>
-      <spacer name="horizontalSpacer_6">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QLabel" name="label_3">
-       <property name="text">
-        <string>Select mode </string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QRadioButton" name="radioButton4Points">
-       <property name="text">
-        <string>4 Points</string>
-       </property>
-       <property name="checked">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QRadioButton" name="radioButton2Points">
-       <property name="text">
-        <string>2 Points</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer_5">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-    </layout>
    </item>
    <item>
     <spacer name="verticalSpacer_2">
@@ -226,7 +203,7 @@
      <item>
       <widget class="QPushButton" name="pushButton_2">
        <property name="text">
-        <string>Register Images</string>
+        <string>Create Masks</string>
        </property>
       </widget>
      </item>
@@ -260,7 +237,7 @@
      <y>28</y>
     </hint>
     <hint type="destinationlabel">
-     <x>695</x>
+     <x>567</x>
      <y>87</y>
     </hint>
    </hints>
@@ -272,12 +249,28 @@
    <slot>OnButtonOutputPath()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>531</x>
-     <y>114</y>
+     <x>493</x>
+     <y>187</y>
     </hint>
     <hint type="destinationlabel">
-     <x>707</x>
+     <x>567</x>
      <y>194</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonMask</sender>
+   <signal>clicked()</signal>
+   <receiver>DialogSelectFolder</receiver>
+   <slot>OnButtonMaskPath()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>521</x>
+     <y>102</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>567</x>
+     <y>151</y>
     </hint>
    </hints>
   </connection>
@@ -288,12 +281,12 @@
    <slot>OnButtonRegister()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>311</x>
-     <y>229</y>
+     <x>293</x>
+     <y>277</y>
     </hint>
     <hint type="destinationlabel">
-     <x>329</x>
-     <y>354</y>
+     <x>408</x>
+     <y>445</y>
     </hint>
    </hints>
   </connection>
@@ -302,5 +295,6 @@
   <slot>OnButtonInputPath()</slot>
   <slot>OnButtonOutputPath()</slot>
   <slot>OnButtonRegister()</slot>
+  <slot>OnButtonMaskPath()</slot>
  </slots>
 </ui>

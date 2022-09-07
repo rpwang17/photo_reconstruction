@@ -2,6 +2,7 @@
 #include "ui_DialogSelectFolder.h"
 #include <QFileDialog>
 #include <QSettings>
+#include <QDir>
 #include <QMessageBox>
 
 DialogSelectFolder::DialogSelectFolder(QWidget *parent) :
@@ -23,6 +24,12 @@ DialogSelectFolder::DialogSelectFolder(QWidget *parent) :
     ui->lineEditPathOutput->setText(path);
     ui->lineEditPathOutput->setCursorPosition( path.size() );
   }
+  path = s.value("CurrentFolder/Mask").toString();
+  if (!path.isEmpty())
+  {
+    ui->lineEditPathMask->setText(path);
+    ui->lineEditPathMask->setCursorPosition( path.size() );
+  }
 }
 
 DialogSelectFolder::~DialogSelectFolder()
@@ -30,6 +37,7 @@ DialogSelectFolder::~DialogSelectFolder()
   QSettings s;
   s.setValue("CurrentFolder/Input", GetInputPath());
   s.setValue("CurrentFolder/Output", GetOutputPath());
+  s.setValue("CurrentFolder/Mask", GetMaskPath());
 
   delete ui;
 }
@@ -40,7 +48,7 @@ void DialogSelectFolder::OnButtonInputPath()
   if (!path.isEmpty())
   {
     ui->lineEditPathInput->setText(path);
-    ui->lineEditPathInput->setCursorPosition( ui->lineEditPathInput->text().size() );
+    ui->lineEditPathInput->setCursorPosition( path.size() );
   }
 }
 
@@ -50,15 +58,25 @@ void DialogSelectFolder::OnButtonOutputPath()
   if (!path.isEmpty())
   {
     ui->lineEditPathOutput->setText(path);
-    ui->lineEditPathOutput->setCursorPosition( ui->lineEditPathOutput->text().size() );
+    ui->lineEditPathOutput->setCursorPosition( path.size() );
+  }
+}
+
+void DialogSelectFolder::OnButtonMaskPath()
+{
+  QString path = QFileDialog::getExistingDirectory(this, "Select Folder", GetInputPath());
+  if (!path.isEmpty())
+  {
+    ui->lineEditPathMask->setText(path);
+    ui->lineEditPathMask->setCursorPosition( path.size() );
   }
 }
 
 void DialogSelectFolder::OnButtonRegister()
 {
-  if (GetInputPath().isEmpty() || GetOutputPath().isEmpty())
+  if (GetInputPath().isEmpty() || GetOutputPath().isEmpty() || GetMaskPath().isEmpty())
   {
-    QMessageBox::warning(this, "", "Please select input/output folder");
+    QMessageBox::warning(this, "", "Please select input/output/mask folder");
     reject();
   }
   else if (!QDir(GetOutputPath()).exists())
@@ -80,7 +98,7 @@ QString DialogSelectFolder::GetOutputPath()
   return ui->lineEditPathOutput->text().trimmed();
 }
 
-bool DialogSelectFolder::IsFourPoint()
+QString DialogSelectFolder::GetMaskPath()
 {
-  return ui->radioButton4Points->isChecked();
+  return ui->lineEditPathMask->text().trimmed();
 }

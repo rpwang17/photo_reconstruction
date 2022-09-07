@@ -56,43 +56,6 @@
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
-         <item>
-          <spacer name="horizontalSpacer_5">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_2">
-           <property name="text">
-            <string>Left mouse button to pan, Right button to zoom, Ctrl+Left button to draw</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer_6">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-       <item>
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
           <spacer name="horizontalSpacer">
@@ -108,19 +71,16 @@
           </spacer>
          </item>
          <item>
-          <widget class="QLabel" name="label">
+          <widget class="QLabel" name="label_2">
            <property name="text">
-            <string>Ruler Length (in mm):</string>
+            <string>Left mouse button to pan, Right button to zoom, Ctrl+Left to draw</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="lineEditRulerLength">
-           <property name="maximumSize">
-            <size>
-             <width>60</width>
-             <height>16777215</height>
-            </size>
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Please select slices in order</string>
            </property>
           </widget>
          </item>
@@ -162,9 +122,9 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButtonRegister">
+          <widget class="QPushButton" name="pushButtonCreateMask">
            <property name="text">
-            <string>Register</string>
+            <string>Create Mask</string>
            </property>
           </widget>
          </item>

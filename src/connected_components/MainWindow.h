@@ -18,13 +18,14 @@ public:
 
 public slots:
   void OnButtonNext();
-  void OnButtonRegister();
+  void OnButtonCreateMask();
   void OnButtonClear();
   void LoadImage(int n);
 
 private:
   Ui::MainWindow *ui;
   QFileInfoList  m_listInputFiles;
+  QFileInfoList  m_listMaskFiles;
   int m_nNumberOfExpectedPoints;
   int m_nIndex;
 };

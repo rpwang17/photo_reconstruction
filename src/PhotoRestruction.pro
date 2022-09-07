@@ -1,3 +1,3 @@
 TEMPLATE = subdirs
 
-SUBDIRS = registration
+SUBDIRS = registration connected_components
