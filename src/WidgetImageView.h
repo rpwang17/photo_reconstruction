@@ -10,7 +10,7 @@ class WidgetImageView : public QWidget
 public:
   explicit WidgetImageView(QWidget *parent = nullptr);
 
-  bool LoadImage(const QString& filename, const QString& mask = "");
+  bool LoadImage(const QString& filename, const QString& mask = "", const QList<QPoint>& points = QList<QPoint>());
 
   void paintEvent(QPaintEvent* e);
   void mousePressEvent(QMouseEvent* e);
@@ -18,12 +18,12 @@ public:
   void mouseReleaseEvent(QMouseEvent* e);
   void resizeEvent(QResizeEvent* e);
 
-  QList<QPoint> GetNumberOfEditedPoints()
+  QList<QPoint> GetEditedPoints()
   {
     return m_listPoints;
   }
 
-  QList< QPair<QPoint,QPoint> > GetNumberOfEditedRegions()
+  QList< QPair<QPoint,QPoint> > GetEditedRegions()
   {
     return m_listRegions;
   }

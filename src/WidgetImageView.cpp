@@ -8,10 +8,10 @@ WidgetImageView::WidgetImageView(QWidget *parent)
     m_nNumberOfExpectedPoints(2), m_nEditMode(0)
 {
   setMouseTracking(true);
-  m_colorPen = QColor(100,100,255);
+  m_colorPen = QColor(50,50,255);
 }
 
-bool WidgetImageView::LoadImage(const QString& filename, const QString& mask)
+bool WidgetImageView::LoadImage(const QString& filename, const QString& mask, const QList<QPoint>& points)
 {
   QImage image(filename);
   if (!image.isNull())
@@ -27,7 +27,7 @@ bool WidgetImageView::LoadImage(const QString& filename, const QString& mask)
     m_sFilename = filename;
     m_dScale = 1.0;
     m_ptOffset = QPoint(0,0);
-    m_listPoints.clear();
+    m_listPoints = points;
     m_listRegions.clear();
     UpdateScaledImage();
     return true;
@@ -48,10 +48,17 @@ void WidgetImageView::paintEvent(QPaintEvent *e)
   {
     p.setPen(m_colorPen);
     p.setBrush(m_colorPen);
+    QList<QPoint> pts;
     foreach (QPoint pt, m_listPoints)
     {
       pt = pt*m_imageScaled.width()/m_image.width() + target.topLeft();
       p.drawEllipse(pt, 2, 2);
+      pts << pt;
+    }
+    if (pts.size() > 1)
+    {
+      p.setPen(QPen(m_colorPen, 2));
+      p.drawLine(pts[0], pts[1]);
     }
   }
   else if (m_nEditMode == 1)

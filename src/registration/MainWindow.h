@@ -18,14 +18,18 @@ public:
 
 public slots:
   void OnButtonNext();
+  void OnButtonPrev();
   void OnButtonRegister();
   void OnButtonClear();
   void LoadImage(int n);
 
 private:
+  void UpdateIndex();
+
   Ui::MainWindow *ui;
   QFileInfoList  m_listInputFiles;
   int m_nNumberOfExpectedPoints;
   int m_nIndex;
+  QList< QList<QPoint> > m_listData;
 };
 #endif // MAINWINDOW_H

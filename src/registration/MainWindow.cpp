@@ -17,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
   ui->setupUi(this);
 
   connect(ui->pushButtonNext, SIGNAL(clicked(bool)), SLOT(OnButtonNext()));
+  connect(ui->pushButtonPrev, SIGNAL(clicked(bool)), SLOT(OnButtonPrev()));
   connect(ui->pushButtonRegister, SIGNAL(clicked(bool)), SLOT(OnButtonRegister()));
   connect(ui->pushButtonClear, SIGNAL(clicked(bool)), SLOT(OnButtonClear()));
 
@@ -44,6 +45,8 @@ MainWindow::MainWindow(QWidget *parent)
   QString input_path = dlgSelect.GetInputPath();
   m_listInputFiles = QDir(input_path).entryInfoList(QDir::Files, QDir::Name);
 
+  UpdateIndex();
+
   if (!m_listInputFiles.isEmpty())
     LoadImage(m_nIndex);
 }
@@ -58,7 +61,7 @@ void MainWindow::OnButtonNext()
   if (m_nIndex < m_listInputFiles.size()-1)
   {
     LoadImage(++m_nIndex);
-    ui->pushButtonNext->setEnabled(false);
+    UpdateIndex();
   }
   else
   {
@@ -67,17 +70,27 @@ void MainWindow::OnButtonNext()
   }
 }
 
+void MainWindow::OnButtonPrev()
+{
+  LoadImage(--m_nIndex);
+  UpdateIndex();
+}
+
 void MainWindow::OnButtonRegister()
 {
   bool bOK;
   double val = ui->lineEditRulerLength->text().trimmed().toDouble(&bOK);
-  if (ui->widgetImageView->GetNumberOfEditedPoints().size() < m_nNumberOfExpectedPoints)
+  if (ui->widgetImageView->GetEditedPoints().size() < m_nNumberOfExpectedPoints)
     QMessageBox::warning(this, "", "Please click on the image to add another point");
   else if (!bOK || val <= 0)
     QMessageBox::warning(this, "", "Please enter a valid value for ruler length");
   else
   {
     // execute script
+    if (m_nIndex < m_listData.size())
+      m_listData[m_nIndex] = ui->widgetImageView->GetEditedPoints();
+    else
+      m_listData << ui->widgetImageView->GetEditedPoints();
     ui->pushButtonNext->setEnabled(true);
   }
 }
@@ -90,5 +103,15 @@ void MainWindow::OnButtonClear()
 
 void MainWindow::LoadImage(int n)
 {
-  ui->widgetImageView->LoadImage(m_listInputFiles[m_nIndex].absoluteFilePath());
+  QList<QPoint> pts;
+  if (m_listData.size() > n)
+    pts = m_listData[n];
+  ui->widgetImageView->LoadImage(m_listInputFiles[n].absoluteFilePath(), "", pts);
+}
+
+void MainWindow::UpdateIndex()
+{
+  ui->labelIndex->setText(tr("%1 / %2").arg(m_nIndex+1).arg(m_listInputFiles.size()));
+  ui->pushButtonPrev->setEnabled(m_nIndex > 0);
+  ui->pushButtonNext->setEnabled(m_nIndex < m_listData.size());
 }
