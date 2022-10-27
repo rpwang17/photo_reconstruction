@@ -49,10 +49,22 @@ MainWindow::MainWindow(QWidget *parent)
 
   if (!m_listInputFiles.isEmpty())
     LoadImage(m_nIndex);
+
+  m_proc = new QProcess(this);
+  connect(m_proc, SIGNAL(readyReadStandardOutput()), this, SLOT(OnProcessOutputMessage()));
+  connect(m_proc, SIGNAL(readyReadStandardError()), this, SLOT(OnProcessOutputMessage()));
+  connect(m_proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(OnProcessFinish()));
+  connect(m_proc, SIGNAL(error(QProcess::ProcessError)),
+          this, SLOT(OnProcessError(QProcess::ProcessError)));
 }
 
 MainWindow::~MainWindow()
 {
+  if (m_proc && m_proc->state() == QProcess::Running)
+  {
+    m_proc->kill();
+    m_proc->waitForFinished();
+  }
   delete ui;
 }
 
@@ -91,8 +103,23 @@ void MainWindow::OnButtonRegister()
       m_listData[m_nIndex] = ui->widgetImageView->GetEditedPoints();
     else
       m_listData << ui->widgetImageView->GetEditedPoints();
-    ui->pushButtonNext->setEnabled(true);
+ // ui->pushButtonNext->setEnabled(true);
   }
+}
+
+void MainWindow::OnProcessError(QProcess::ProcessError)
+{
+
+}
+
+void MainWindow::OnProcessFinished()
+{
+
+}
+
+void MainWindow::OnProcessOutputMessage()
+{
+
 }
 
 void MainWindow::OnButtonClear()

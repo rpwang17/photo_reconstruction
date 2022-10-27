@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QFileInfoList>
+#include <QProcess>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -23,6 +24,11 @@ public slots:
   void OnButtonClear();
   void LoadImage(int n);
 
+private slots:
+  void OnProcessOutputMessage();
+  void OnProcessFinished();
+  void OnProcessError(QProcess::ProcessError);
+
 private:
   void UpdateIndex();
 
@@ -31,5 +37,7 @@ private:
   int m_nNumberOfExpectedPoints;
   int m_nIndex;
   QList< QList<QPoint> > m_listData;
+
+  QProcess* m_proc;
 };
 #endif // MAINWINDOW_H
