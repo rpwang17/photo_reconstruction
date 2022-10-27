@@ -184,6 +184,11 @@ void WidgetImageView::mouseMoveEvent(QMouseEvent *e)
   }
 }
 
+void WidgetImageView::wheelEvent(QWheelEvent* e)
+{
+//  qDebug() << e;
+}
+
 void WidgetImageView::resizeEvent(QResizeEvent *e)
 {
   UpdateScaledImage();

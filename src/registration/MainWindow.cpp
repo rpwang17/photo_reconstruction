@@ -7,8 +7,12 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QMessageBox>
+#include <QSettings>
+#include <QDesktopWidget>
 
 #define WND_TITLE "Retrospective Registration"
+#define PY_SCRIPT_PATH "/home/rpwang/src/photo_reconstruction/py_scripts/func_registration.py"
+#define PY_COMMAND "python3"
 
 MainWindow::MainWindow(QWidget *parent)
   : QMainWindow(parent)
@@ -41,9 +45,12 @@ MainWindow::MainWindow(QWidget *parent)
 
   m_nNumberOfExpectedPoints = dlgSelect.IsFourPoint()?4:2;
   show();
+  ui->labelHeight->setVisible(m_nNumberOfExpectedPoints == 4);
+  ui->lineEditRulerHeight->setVisible(m_nNumberOfExpectedPoints == 4);
 
   QString input_path = dlgSelect.GetInputPath();
   m_listInputFiles = QDir(input_path).entryInfoList(QDir::Files, QDir::Name);
+  m_strOutputFolder = dlgSelect.GetOutputPath();
 
   UpdateIndex();
 
@@ -51,15 +58,22 @@ MainWindow::MainWindow(QWidget *parent)
     LoadImage(m_nIndex);
 
   m_proc = new QProcess(this);
-  connect(m_proc, SIGNAL(readyReadStandardOutput()), this, SLOT(OnProcessOutputMessage()));
-  connect(m_proc, SIGNAL(readyReadStandardError()), this, SLOT(OnProcessOutputMessage()));
-  connect(m_proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(OnProcessFinish()));
-  connect(m_proc, SIGNAL(error(QProcess::ProcessError)),
-          this, SLOT(OnProcessError(QProcess::ProcessError)));
+  connect(m_proc, SIGNAL(readyReadStandardOutput()), SLOT(OnProcessOutputMessage()));
+  connect(m_proc, SIGNAL(readyReadStandardError()), SLOT(OnProcessOutputMessage()));
+  connect(m_proc, SIGNAL(finished(int, QProcess::ExitStatus)), SLOT(OnProcessFinished()));
+  connect(m_proc, SIGNAL(error(QProcess::ProcessError)), SLOT(OnProcessError(QProcess::ProcessError)));
+
+  QSettings s;
+  QRect rc = s.value("MainWindow/Geometry").toRect();
+  if (rc.isValid() && QApplication::desktop()->screenGeometry(this).contains(rc))
+    setGeometry(rc);
 }
 
 MainWindow::~MainWindow()
 {
+  QSettings s;
+  s.setValue("MainWindow/Geometry", geometry());
+
   if (m_proc && m_proc->state() == QProcess::Running)
   {
     m_proc->kill();
@@ -91,35 +105,56 @@ void MainWindow::OnButtonPrev()
 void MainWindow::OnButtonRegister()
 {
   bool bOK;
-  double val = ui->lineEditRulerLength->text().trimmed().toDouble(&bOK);
+  double dWidth = ui->lineEditRulerWidth->text().trimmed().toDouble(&bOK);
+  double dHeight = 1;
+  if (m_nNumberOfExpectedPoints == 4)
+  {
+    dHeight = ui->lineEditRulerHeight->text().trimmed().toDouble(&bOK);
+    if (!bOK)
+      dHeight = -1;
+  }
   if (ui->widgetImageView->GetEditedPoints().size() < m_nNumberOfExpectedPoints)
     QMessageBox::warning(this, "", "Please click on the image to add another point");
-  else if (!bOK || val <= 0)
+  else if (!bOK || dWidth <= 0 || dHeight <= 0)
     QMessageBox::warning(this, "", "Please enter a valid value for ruler length");
   else
   {
     // execute script
+    QList<QPoint> pts = ui->widgetImageView->GetEditedPoints();
     if (m_nIndex < m_listData.size())
-      m_listData[m_nIndex] = ui->widgetImageView->GetEditedPoints();
+      m_listData[m_nIndex] = pts;
     else
-      m_listData << ui->widgetImageView->GetEditedPoints();
+      m_listData << pts;
+
+    QStringList strList;
+    foreach (QPoint pt, pts)
+      strList << QString::number(pt.x()) << QString::number(pt.y());
+    QStringList cmd;
+    cmd << PY_COMMAND << PY_SCRIPT_PATH
+         << "--in_img" << ui->widgetImageView->GetFilename()
+         << "--points" << strList.join(" ")
+         << "--width" << QString::number(dWidth)
+         << "--height" << QString::number(dHeight)
+         << "--out_dir" << m_strOutputFolder;
+    m_proc->start(cmd.join(" "));
  // ui->pushButtonNext->setEnabled(true);
   }
 }
 
 void MainWindow::OnProcessError(QProcess::ProcessError)
 {
-
+  QMessageBox::warning(this, "Error", "Error occurred during process.");
 }
 
 void MainWindow::OnProcessFinished()
 {
-
+  ui->pushButtonNext->setEnabled(true);
 }
 
 void MainWindow::OnProcessOutputMessage()
 {
-
+  qDebug() << m_proc->readAllStandardError();
+  qDebug() << m_proc->readAllStandardOutput();
 }
 
 void MainWindow::OnButtonClear()

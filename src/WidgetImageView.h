@@ -16,6 +16,7 @@ public:
   void mousePressEvent(QMouseEvent* e);
   void mouseMoveEvent(QMouseEvent* e);
   void mouseReleaseEvent(QMouseEvent* e);
+  void wheelEvent(QWheelEvent* e);
   void resizeEvent(QResizeEvent* e);
 
   QList<QPoint> GetEditedPoints()
@@ -26,6 +27,11 @@ public:
   QList< QPair<QPoint,QPoint> > GetEditedRegions()
   {
     return m_listRegions;
+  }
+
+  QString GetFilename()
+  {
+    return m_sFilename;
   }
 
   enum EditMode { EM_POINT = 0, EM_REGION };

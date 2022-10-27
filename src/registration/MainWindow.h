@@ -34,6 +34,7 @@ private:
 
   Ui::MainWindow *ui;
   QFileInfoList  m_listInputFiles;
+  QString m_strOutputFolder;
   int m_nNumberOfExpectedPoints;
   int m_nIndex;
   QList< QList<QPoint> > m_listData;

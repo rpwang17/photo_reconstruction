@@ -110,12 +110,45 @@
          <item>
           <widget class="QLabel" name="label">
            <property name="text">
-            <string>Ruler Length (in mm):</string>
+            <string>Ruler Length (mm):</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="lineEditRulerLength">
+          <widget class="QLineEdit" name="lineEditRulerWidth">
+           <property name="maximumSize">
+            <size>
+             <width>60</width>
+             <height>16777215</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_8">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>15</width>
+             <height>5</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QLabel" name="labelHeight">
+           <property name="text">
+            <string>Ruler Height (mm):</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="lineEditRulerHeight">
            <property name="maximumSize">
             <size>
              <width>60</width>
