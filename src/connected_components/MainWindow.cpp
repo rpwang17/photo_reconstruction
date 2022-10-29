@@ -10,10 +10,10 @@
 #include <QSettings>
 #include <QDesktopWidget>
 #include "NumpyHelper.h"
+#include "CommonDef.h"
+#include <QTemporaryDir>
 
 #define WND_TITLE "Connected Components"
-#define PY_SCRIPT_PATH "/home/rpwang/src/photo_reconstruction/py_scripts/func_masking.py"
-#define PY_COMMAND "python3"
 
 MainWindow::MainWindow(QWidget *parent)
   : QMainWindow(parent)
@@ -21,9 +21,16 @@ MainWindow::MainWindow(QWidget *parent)
 {
   ui->setupUi(this);
 
-  m_strPyScriptPath = QApplication::applicationDirPath() + "/func_masking.py";
+  // setup script
+  static QTemporaryDir dir;
+  QFile::copy(":/func_masking.py", dir.filePath("func_masking.py"));
+  m_strPyScriptPath = dir.filePath("func_masking.py");
+
   if (!QFile::exists(m_strPyScriptPath))
-    m_strPyScriptPath = PY_SCRIPT_PATH;
+  {
+    QMessageBox::critical(this, "Error", "Could not locate func_masking.py script");
+    qApp->quit();
+  }
 
   m_listStockColors << QColor(255,100,100) << QColor(255,255,100) << QColor(100,255,100)
                     << QColor(110,245,255) << QColor(75,100,255) << QColor(255,128,0)

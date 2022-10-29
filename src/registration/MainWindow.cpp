@@ -9,10 +9,10 @@
 #include <QMessageBox>
 #include <QSettings>
 #include <QDesktopWidget>
+#include "CommonDef.h"
+#include <QTemporaryDir>
 
 #define WND_TITLE "Retrospective Registration"
-#define PY_SCRIPT_PATH "/home/rpwang/src/photo_reconstruction/py_scripts/func_registration.py"
-#define PY_COMMAND "python3"
 
 MainWindow::MainWindow(QWidget *parent)
   : QMainWindow(parent)
@@ -20,9 +20,12 @@ MainWindow::MainWindow(QWidget *parent)
 {
   ui->setupUi(this);
 
-  m_strPyScriptPath = QApplication::applicationDirPath() + "/func_registration.py";
-  if (!QFile::exists(m_strPyScriptPath))
-    m_strPyScriptPath = PY_SCRIPT_PATH;
+  QSettings s;
+  QRect rc = s.value("MainWindow/Geometry").toRect();
+  if (rc.isValid() && QApplication::desktop()->screenGeometry(this).contains(rc))
+    setGeometry(rc);
+
+  SetupScriptPath();
 
   connect(ui->pushButtonNext, SIGNAL(clicked(bool)), SLOT(OnButtonNext()));
   connect(ui->pushButtonPrev, SIGNAL(clicked(bool)), SLOT(OnButtonPrev()));
@@ -66,11 +69,6 @@ MainWindow::MainWindow(QWidget *parent)
   connect(m_proc, SIGNAL(readyReadStandardError()), SLOT(OnProcessOutputMessage()));
   connect(m_proc, SIGNAL(finished(int, QProcess::ExitStatus)), SLOT(OnProcessFinished()));
   connect(m_proc, SIGNAL(error(QProcess::ProcessError)), SLOT(OnProcessError(QProcess::ProcessError)));
-
-  QSettings s;
-  QRect rc = s.value("MainWindow/Geometry").toRect();
-  if (rc.isValid() && QApplication::desktop()->screenGeometry(this).contains(rc))
-    setGeometry(rc);
 }
 
 MainWindow::~MainWindow()
@@ -84,6 +82,35 @@ MainWindow::~MainWindow()
     m_proc->waitForFinished();
   }
   delete ui;
+}
+
+void MainWindow::SetupScriptPath()
+{
+  // setup script and resource files
+  static QTemporaryDir dir;
+  QFile file(":/func_registration.py");
+  file.open(QFile::ReadOnly | QFile::Text);
+  QTextStream in(&file);
+  QString str = in.readAll();
+  str.replace("./horizontal.png", dir.filePath("horizontal.png"));
+  str.replace("./vertical.png", dir.filePath("vertical.png"));
+  QFile file2(dir.filePath("func_registration.py"));
+  if (file2.open(QFile::ReadWrite))
+  {
+    QTextStream out(&file2);
+    out << str;
+  }
+  file2.close();
+  file2.flush();
+  QFile::copy(":/horizontal.png", dir.filePath("horizontal.png"));
+  QFile::copy(":/vertical.png", dir.filePath("vertical.png"));
+  m_strPyScriptPath = dir.filePath("func_registration.py");
+
+  if (!QFile::exists(m_strPyScriptPath))
+  {
+    QMessageBox::critical(this, "Error", "Could not locate func_registration.py script");
+    qApp->quit();
+  }
 }
 
 void MainWindow::OnButtonNext()
@@ -135,11 +162,11 @@ void MainWindow::OnButtonRegister()
       strList << QString::number(pt.x()) << QString::number(pt.y());
     QStringList cmd;
     cmd << PY_COMMAND << m_strPyScriptPath
-         << "--in_img" << ui->widgetImageView->GetFilename()
-         << "--points" << strList.join(" ")
-         << "--width" << QString::number(dWidth)
-         << "--height" << QString::number(dHeight)
-         << "--out_dir" << m_strOutputFolder;
+        << "--in_img" << ui->widgetImageView->GetFilename()
+        << "--points" << strList.join(" ")
+        << "--width" << QString::number(dWidth)
+        << "--height" << QString::number(dHeight)
+        << "--out_dir" << m_strOutputFolder;
     m_proc->start(cmd.join(" "));
   }
 }

@@ -12,6 +12,7 @@ INCLUDEPATH += $$PWD
 SOURCES += $$PWD/WidgetImageView.cpp $$PWD/cnpy.cpp \
   $$PWD/NumpyHelper.cpp
 HEADERS += $$PWD/WidgetImageView.h $$PWD/cnpy.h \
+  $$PWD/CommonDef.h \
   $$PWD/NumpyHelper.h
 LIBS += -lz
 

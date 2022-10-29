@@ -29,8 +29,8 @@ class SplitArgs(argparse.Action):
 def perform_registration(args):
     """This function performs the registration and close the GUI automatically"""
 
-    args.horizontal_ruler = cv2.imread("/home/rpwang/src/photo_reconstruction/py_scripts/horizontal.png")
-    args.vertical_ruler = cv2.imread("/home/rpwang/src/photo_reconstruction/py_scripts/vertical.png")
+    args.horizontal_ruler = cv2.imread("./horizontal.png")
+    args.vertical_ruler = cv2.imread("./vertical.png")
 
     # read the image
     input_path, input_ext = os.path.splitext(args.in_img)

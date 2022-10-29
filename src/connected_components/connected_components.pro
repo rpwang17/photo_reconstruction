@@ -16,3 +16,6 @@ FORMS += \
     DialogWelcome.ui \
     MainWindow.ui
 
+RESOURCES += \
+  connected_components.qrc
+

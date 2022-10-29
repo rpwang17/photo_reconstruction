@@ -31,6 +31,7 @@ private slots:
 
 private:
   void UpdateIndex();
+  void SetupScriptPath();
 
   Ui::MainWindow *ui;
   QFileInfoList  m_listInputFiles;
