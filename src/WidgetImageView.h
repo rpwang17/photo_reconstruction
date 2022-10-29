@@ -4,13 +4,19 @@
 #include <QWidget>
 #include <QImage>
 
+#ifndef RECT_REGION
+#define RECT_REGION QPair<QPoint,QPoint>
+#endif
+
 class WidgetImageView : public QWidget
 {
   Q_OBJECT
 public:
   explicit WidgetImageView(QWidget *parent = nullptr);
 
-  bool LoadImage(const QString& filename, const QString& mask = "", const QList<QPoint>& points = QList<QPoint>());
+  bool LoadImage(const QString& filename, const QString& mask = "",
+                 const QList<QPoint>& points = QList<QPoint>(),
+                 const QList<RECT_REGION>& regions = QList<RECT_REGION>());
 
   void paintEvent(QPaintEvent* e);
   void mousePressEvent(QMouseEvent* e);
@@ -24,7 +30,7 @@ public:
     return m_listPoints;
   }
 
-  QList< QPair<QPoint,QPoint> > GetEditedRegions()
+  QList<RECT_REGION> GetEditedRegions()
   {
     return m_listRegions;
   }
@@ -34,9 +40,15 @@ public:
     return m_sFilename;
   }
 
+  QString GetMaskFilename()
+  {
+    return m_sMaskFilename;
+  }
+
   enum EditMode { EM_POINT = 0, EM_REGION };
 
 signals:
+  void LastRegionEdited(int n);
 
 public slots:
   void SetNumberOfExpectedPoints(int n)
@@ -49,18 +61,17 @@ public slots:
     m_nEditMode = n;
   }
 
-  void Clear()
-  {
-    m_listPoints.clear();
-    m_listRegions.clear();
-    update();
-  }
+  void AddOverlay(const QImage& overlay_image);
+
+  void Clear();
 
 private:
+  void PrepareImage();
   void UpdateScaledImage(bool bSmooth = false);
   QPoint ScreenToImage(const QPoint& pt);
 
   QString   m_sFilename;
+  QString   m_sMaskFilename;
   QImage    m_image;
   QImage    m_imageScaled;
   double    m_dScale;
@@ -75,7 +86,7 @@ private:
   int       m_nNumberOfExpectedPoints;
   int       m_nEditMode;
   QList<QPoint> m_listPoints;
-  QList< QPair<QPoint, QPoint> > m_listRegions;
+  QList<RECT_REGION> m_listRegions;
   QColor    m_colorPen;
 };
 

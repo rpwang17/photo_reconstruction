@@ -9,32 +9,50 @@ WidgetImageView::WidgetImageView(QWidget *parent)
     m_nNumberOfExpectedPoints(2), m_nEditMode(0)
 {
   setMouseTracking(true);
-  m_colorPen = QColor(50,50,255);
+  m_colorPen = QColor(50,255,50);
 }
 
-bool WidgetImageView::LoadImage(const QString& filename, const QString& mask, const QList<QPoint>& points)
+bool WidgetImageView::LoadImage(const QString& filename, const QString& mask, const QList<QPoint>& points, const QList<RECT_REGION>& regions)
 {
-  QImage image(filename);
-  if (!image.isNull())
+  m_sFilename = filename;
+  m_sMaskFilename = mask;
+  PrepareImage();
+  if (!m_image.isNull())
   {
-    m_image = image;
-    if (!mask.isEmpty())
-    {
-      QImage mask_image(mask);
-      QPainter p(&m_image);
-      p.setCompositionMode(QPainter::CompositionMode_Multiply);
-      p.drawImage(0, 0, mask_image);
-    }
-    m_sFilename = filename;
     m_dScale = 1.0;
     m_ptOffset = QPoint(0,0);
     m_listPoints = points;
-    m_listRegions.clear();
+    m_listRegions = regions;
     UpdateScaledImage();
     return true;
   }
   else
     return false;
+}
+
+void WidgetImageView::PrepareImage()
+{
+  QImage image(m_sFilename);
+  if (!image.isNull())
+  {
+    m_image = image;
+    if (!m_sMaskFilename.isEmpty())
+    {
+      QImage mask_image(m_sMaskFilename);
+      QPainter p(&m_image);
+      p.setCompositionMode(QPainter::CompositionMode_Multiply);
+      p.drawImage(0, 0, mask_image);
+      p.end();
+    }
+  }
+}
+
+void WidgetImageView::AddOverlay(const QImage& overlay_image)
+{
+  QPainter p(&m_image);
+  p.drawImage(0, 0, overlay_image);
+  p.end();
+  UpdateScaledImage();
 }
 
 void WidgetImageView::paintEvent(QPaintEvent *e)
@@ -64,7 +82,7 @@ void WidgetImageView::paintEvent(QPaintEvent *e)
   }
   else if (m_nEditMode == 1)
   {
-    QColor pen_color(30,255,30);
+    QColor pen_color(255,255,255);
     QColor active_color(255,30,30);
     p.setPen(QPen(pen_color, 2));
     p.setBrush(Qt::NoBrush);
@@ -91,7 +109,7 @@ void WidgetImageView::mousePressEvent(QMouseEvent *e)
     {
       m_bDrawing = true;
       QPoint pt = ScreenToImage(m_ptPress);
-      QPair<QPoint,QPoint> region;
+      RECT_REGION region;
       region.first = pt;
       region.second = pt;
       m_listRegions << region;
@@ -129,6 +147,7 @@ void WidgetImageView::mouseReleaseEvent(QMouseEvent *e)
     else if (m_nEditMode == EM_REGION)
     {
       update();
+      emit LastRegionEdited(m_listRegions.size()-1);
     }
   }
   else if (m_bZooming)
@@ -176,7 +195,7 @@ void WidgetImageView::mouseMoveEvent(QMouseEvent *e)
       pt_0.setY(pt_1.y());
       pt_1.setY(temp);
     }
-    QPair<QPoint,QPoint> region = m_listRegions.last();
+    RECT_REGION region = m_listRegions.last();
     region.first = pt_0;
     region.second = pt_1;
     m_listRegions[m_listRegions.size()-1] = region;
@@ -186,7 +205,7 @@ void WidgetImageView::mouseMoveEvent(QMouseEvent *e)
 
 void WidgetImageView::wheelEvent(QWheelEvent* e)
 {
-//  qDebug() << e;
+  //  qDebug() << e;
 }
 
 void WidgetImageView::resizeEvent(QResizeEvent *e)
@@ -199,9 +218,18 @@ void WidgetImageView::UpdateScaledImage(bool bSmooth)
   if (!m_image.isNull() && height() > 0)
   {
     if (1.0*m_image.width()/m_image.height() > 1.0*width()/height())
-       m_imageScaled = m_image.scaledToWidth(width()*m_dScale, bSmooth?Qt::SmoothTransformation:Qt::FastTransformation);
+      m_imageScaled = m_image.scaledToWidth(width()*m_dScale, bSmooth?Qt::SmoothTransformation:Qt::FastTransformation);
     else
       m_imageScaled = m_image.scaledToHeight(height()*m_dScale, bSmooth?Qt::SmoothTransformation:Qt::FastTransformation);
   }
+  update();
+}
+
+void WidgetImageView::Clear()
+{
+  m_listPoints.clear();
+  m_listRegions.clear();
+  PrepareImage();
+  UpdateScaledImage();
   update();
 }

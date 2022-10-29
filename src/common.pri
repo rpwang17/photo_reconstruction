@@ -9,8 +9,11 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 INCLUDEPATH += $$PWD
-SOURCES += $$PWD/WidgetImageView.cpp
-HEADERS += $$PWD/WidgetImageView.h
+SOURCES += $$PWD/WidgetImageView.cpp $$PWD/cnpy.cpp \
+  $$PWD/NumpyHelper.cpp
+HEADERS += $$PWD/WidgetImageView.h $$PWD/cnpy.h \
+  $$PWD/NumpyHelper.h
+LIBS += -lz
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

@@ -137,7 +137,6 @@ void MainWindow::OnButtonRegister()
          << "--height" << QString::number(dHeight)
          << "--out_dir" << m_strOutputFolder;
     m_proc->start(cmd.join(" "));
- // ui->pushButtonNext->setEnabled(true);
   }
 }
 
