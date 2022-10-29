@@ -43,6 +43,7 @@ private:
   QList< QList<RECT_REGION> > m_listData;
 
   QList<QColor> m_listStockColors;
+  QString   m_strPyScriptPath;
 
   QProcess* m_proc;
 };

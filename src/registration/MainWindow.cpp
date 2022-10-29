@@ -20,6 +20,10 @@ MainWindow::MainWindow(QWidget *parent)
 {
   ui->setupUi(this);
 
+  m_strPyScriptPath = QApplication::applicationDirPath() + "/func_registration.py";
+  if (!QFile::exists(m_strPyScriptPath))
+    m_strPyScriptPath = PY_SCRIPT_PATH;
+
   connect(ui->pushButtonNext, SIGNAL(clicked(bool)), SLOT(OnButtonNext()));
   connect(ui->pushButtonPrev, SIGNAL(clicked(bool)), SLOT(OnButtonPrev()));
   connect(ui->pushButtonRegister, SIGNAL(clicked(bool)), SLOT(OnButtonRegister()));
@@ -130,7 +134,7 @@ void MainWindow::OnButtonRegister()
     foreach (QPoint pt, pts)
       strList << QString::number(pt.x()) << QString::number(pt.y());
     QStringList cmd;
-    cmd << PY_COMMAND << PY_SCRIPT_PATH
+    cmd << PY_COMMAND << m_strPyScriptPath
          << "--in_img" << ui->widgetImageView->GetFilename()
          << "--points" << strList.join(" ")
          << "--width" << QString::number(dWidth)

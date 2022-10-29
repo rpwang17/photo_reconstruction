@@ -21,8 +21,13 @@ MainWindow::MainWindow(QWidget *parent)
 {
   ui->setupUi(this);
 
-  m_listStockColors << QColor(255,100,100) << QColor(255,255,50) << QColor(100,255,100)
-                    << QColor(100,255,255) << QColor(100,100,255);
+  m_strPyScriptPath = QApplication::applicationDirPath() + "/func_masking.py";
+  if (!QFile::exists(m_strPyScriptPath))
+    m_strPyScriptPath = PY_SCRIPT_PATH;
+
+  m_listStockColors << QColor(255,100,100) << QColor(255,255,100) << QColor(100,255,100)
+                    << QColor(110,245,255) << QColor(75,100,255) << QColor(255,128,0)
+                    << QColor(100,150,170) << QColor(120,60,220);
 
   ui->widgetImageView->SetEditMode(WidgetImageView::EM_REGION);
   connect(ui->widgetImageView, SIGNAL(LastRegionEdited(int)),
@@ -131,7 +136,7 @@ void MainWindow::CreateComponents(const QList<RECT_REGION>& rects)
     strList << QString::number(rc.first.x()) << QString::number(rc.first.y())
             << QString::number(rc.second.x()) << QString::number(rc.second.y());
   QStringList cmd;
-  cmd << PY_COMMAND << PY_SCRIPT_PATH
+  cmd << PY_COMMAND << m_strPyScriptPath
        << "--in_img" << ui->widgetImageView->GetFilename()
        << "--rectangle_coordinates" << strList.join(" ")
        << "--in_mask" << ui->widgetImageView->GetMaskFilename()
@@ -144,8 +149,9 @@ void MainWindow::OnLastRegionEdited(int n)
   m_proc->setProperty("region_index", n);
   QList<RECT_REGION> list;
   list << ui->widgetImageView->GetEditedRegions().last();
-  CreateComponents(list);
   ui->pushButtonNext->setEnabled(false);
+  ui->widgetImageView->setEnabled(false);
+  CreateComponents(list);
 }
 
 void MainWindow::OnButtonClear()
@@ -171,6 +177,8 @@ void MainWindow::OnProcessError(QProcess::ProcessError)
 
 void MainWindow::OnProcessFinished()
 {
+  ui->widgetImageView->setEnabled(true);
+
   int region_n = m_proc->property("region_index").toInt();
   QString fn = QFileInfo(ui->widgetImageView->GetFilename()).fileName();
   fn.replace(".JPG", "_mask.npy", Qt::CaseInsensitive);

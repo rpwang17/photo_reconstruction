@@ -38,6 +38,7 @@ private:
   int m_nNumberOfExpectedPoints;
   int m_nIndex;
   QList< QList<QPoint> > m_listData;
+  QString m_strPyScriptPath;
 
   QProcess* m_proc;
 };
