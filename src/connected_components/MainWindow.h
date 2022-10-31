@@ -10,6 +10,8 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
+class QLabel;
+
 class MainWindow : public QMainWindow
 {
   Q_OBJECT
@@ -31,6 +33,7 @@ private slots:
   void OnProcessFinished();
   void OnProcessError(QProcess::ProcessError);
   void OnLastRegionEdited(int n);
+  void ShowWaitMessage(bool bShow = true);
 
 private:
   void UpdateIndex();
@@ -48,5 +51,6 @@ private:
 
   QProcess* m_proc;
   QString   m_strTempFolder;
+  QLabel*   m_labelWait;
 };
 #endif // MAINWINDOW_H

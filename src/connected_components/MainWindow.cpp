@@ -21,6 +21,12 @@ MainWindow::MainWindow(QWidget *parent)
 {
   ui->setupUi(this);
 
+  m_labelWait = new QLabel(this);
+  m_labelWait->setMinimumHeight(36);
+  m_labelWait->setText("Computing ...");
+  m_labelWait->setStyleSheet("border:none;padding:8px;background-color:rgba(0,0,0,200);color:rgba(255,255,255,230);border-radius:12px;font-size:14px");
+  m_labelWait->hide();
+
   // setup script
   static QTemporaryDir dir;
   m_strTempFolder = dir.path();
@@ -53,6 +59,7 @@ MainWindow::MainWindow(QWidget *parent)
     setGeometry(rc);
 
   m_proc = new QProcess(this);
+  connect(m_proc, SIGNAL(started()), SLOT(ShowWaitMessage()));
   connect(m_proc, SIGNAL(readyReadStandardOutput()), SLOT(OnProcessOutputMessage()));
   connect(m_proc, SIGNAL(readyReadStandardError()), SLOT(OnProcessOutputMessage()));
   connect(m_proc, SIGNAL(finished(int, QProcess::ExitStatus)), SLOT(OnProcessFinished()));
@@ -208,6 +215,8 @@ void MainWindow::OnProcessFinished()
   }
   if (!image.isNull())
     ui->widgetImageView->AddOverlay(image);
+
+  ShowWaitMessage(false);
 }
 
 void MainWindow::OnProcessOutputMessage()
@@ -223,3 +232,15 @@ void MainWindow::UpdateIndex()
   ui->pushButtonNext->setEnabled(m_nIndex < m_listData.size());
 }
 
+void MainWindow::ShowWaitMessage(bool bShow)
+{
+  m_labelWait->setVisible(bShow);
+  if (bShow)
+  {
+    QRect rc = m_labelWait->geometry();
+    rc.moveCenter(ui->widgetImageView->geometry().center());
+    rc.moveBottom(ui->widgetImageView->geometry().bottom()-10);
+    m_labelWait->setGeometry(rc);
+    m_labelWait->raise();
+  }
+}
