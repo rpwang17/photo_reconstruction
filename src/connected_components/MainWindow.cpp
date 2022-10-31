@@ -22,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent)
   ui->setupUi(this);
 
   m_labelWait = new QLabel(this);
-  m_labelWait->setMinimumHeight(36);
+  m_labelWait->setMinimumSize(140, 36);
   m_labelWait->setText("Computing ...");
   m_labelWait->setStyleSheet("border:none;padding:8px;background-color:rgba(0,0,0,200);color:rgba(255,255,255,230);border-radius:12px;font-size:14px");
   m_labelWait->hide();
@@ -59,7 +59,7 @@ MainWindow::MainWindow(QWidget *parent)
     setGeometry(rc);
 
   m_proc = new QProcess(this);
-  connect(m_proc, SIGNAL(started()), SLOT(ShowWaitMessage()));
+  connect(m_proc, SIGNAL(started()), SLOT(OnProcessStarted()));
   connect(m_proc, SIGNAL(readyReadStandardOutput()), SLOT(OnProcessOutputMessage()));
   connect(m_proc, SIGNAL(readyReadStandardError()), SLOT(OnProcessOutputMessage()));
   connect(m_proc, SIGNAL(finished(int, QProcess::ExitStatus)), SLOT(OnProcessFinished()));
@@ -73,7 +73,7 @@ MainWindow::~MainWindow()
 
   if (m_proc && m_proc->state() == QProcess::Running)
   {
-    m_proc->kill();
+//    m_proc->kill();
     m_proc->waitForFinished();
   }
   delete ui;
@@ -194,6 +194,12 @@ void MainWindow::OnProcessError(QProcess::ProcessError)
   QMessageBox::warning(this, "Error", "Error occurred during process.");
 }
 
+void MainWindow::OnProcessStarted()
+{
+  ShowWaitMessage(true);
+  ui->pushButtonCreateMask->setEnabled(false);
+}
+
 void MainWindow::OnProcessFinished()
 {
   ui->widgetImageView->setEnabled(true);
@@ -217,6 +223,7 @@ void MainWindow::OnProcessFinished()
     ui->widgetImageView->AddOverlay(image);
 
   ShowWaitMessage(false);
+  ui->pushButtonCreateMask->setEnabled(true);
 }
 
 void MainWindow::OnProcessOutputMessage()
