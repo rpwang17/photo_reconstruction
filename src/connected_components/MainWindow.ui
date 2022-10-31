@@ -73,14 +73,11 @@
          <item>
           <widget class="QLabel" name="label_2">
            <property name="text">
-            <string>Left mouse button to pan, Right button to zoom, Ctrl+Left to draw</string>
+            <string>Left mouse button to pan, Right button to zoom, Ctrl+Left to draw. Please select slices in order. 
+Click &quot;Create Mask&quot; after you select all the slices.</string>
            </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label">
-           <property name="text">
-            <string>Please select slices in order</string>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>

@@ -23,6 +23,7 @@ MainWindow::MainWindow(QWidget *parent)
 
   // setup script
   static QTemporaryDir dir;
+  m_strTempFolder = dir.path();
   QFile::copy(":/func_masking.py", dir.filePath("func_masking.py"));
   m_strPyScriptPath = dir.filePath("func_masking.py");
 
@@ -140,7 +141,7 @@ void MainWindow::OnButtonCreateMask()
   CreateComponents(list);
 }
 
-void MainWindow::CreateComponents(const QList<RECT_REGION>& rects)
+void MainWindow::CreateComponents(const QList<RECT_REGION>& rects, bool bTemp)
 {
   QStringList strList;
   foreach (RECT_REGION rc, rects)
@@ -151,7 +152,7 @@ void MainWindow::CreateComponents(const QList<RECT_REGION>& rects)
        << "--in_img" << ui->widgetImageView->GetFilename()
        << "--rectangle_coordinates" << strList.join(" ")
        << "--in_mask" << ui->widgetImageView->GetMaskFilename()
-       << "--out_dir" << m_strOutputFolder;
+       << "--out_dir" << (bTemp?m_strTempFolder:m_strOutputFolder);
   m_proc->start(cmd.join(" "));
 }
 
@@ -162,7 +163,7 @@ void MainWindow::OnLastRegionEdited(int n)
   list << ui->widgetImageView->GetEditedRegions().last();
   ui->pushButtonNext->setEnabled(false);
   ui->widgetImageView->setEnabled(false);
-  CreateComponents(list);
+  CreateComponents(list, true);
 }
 
 void MainWindow::OnButtonClear()
@@ -202,7 +203,7 @@ void MainWindow::OnProcessFinished()
   }
   else
   {
-    image = NumpyHelper::NumpyToImage(QFileInfo(m_strOutputFolder, fn).absoluteFilePath(),
+    image = NumpyHelper::NumpyToImage(QFileInfo(m_strTempFolder, fn).absoluteFilePath(),
                                              m_listStockColors[region_n%m_listStockColors.size()]);
   }
   if (!image.isNull())

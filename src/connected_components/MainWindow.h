@@ -34,7 +34,7 @@ private slots:
 
 private:
   void UpdateIndex();
-  void CreateComponents(const QList<RECT_REGION>& rects);
+  void CreateComponents(const QList<RECT_REGION>& rects, bool bTemp = false);
 
   Ui::MainWindow *ui;
   QFileInfoList  m_listInputFiles;
@@ -47,5 +47,6 @@ private:
   QString   m_strPyScriptPath;
 
   QProcess* m_proc;
+  QString   m_strTempFolder;
 };
 #endif // MAINWINDOW_H
