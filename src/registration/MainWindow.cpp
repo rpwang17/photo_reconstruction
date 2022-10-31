@@ -34,36 +34,6 @@ MainWindow::MainWindow(QWidget *parent)
 
   setWindowTitle(WND_TITLE);
 
-  DialogWelcome dlg;
-  dlg.setWindowTitle(WND_TITLE);
-  if (dlg.exec() != QDialog::Accepted)
-  {
-    QTimer::singleShot(0, this, SLOT(close()));
-    return;
-  }
-
-  DialogSelectFolder dlgSelect;
-  dlgSelect.setWindowTitle(WND_TITLE);
-  if (dlgSelect.exec() != QDialog::Accepted)
-  {
-    QTimer::singleShot(0, this, SLOT(close()));
-    return;
-  }
-
-  m_nNumberOfExpectedPoints = dlgSelect.IsFourPoint()?4:2;
-  show();
-  ui->labelHeight->setVisible(m_nNumberOfExpectedPoints == 4);
-  ui->lineEditRulerHeight->setVisible(m_nNumberOfExpectedPoints == 4);
-
-  QString input_path = dlgSelect.GetInputPath();
-  m_listInputFiles = QDir(input_path).entryInfoList(QDir::Files, QDir::Name);
-  m_strOutputFolder = dlgSelect.GetOutputPath();
-
-  UpdateIndex();
-
-  if (!m_listInputFiles.isEmpty())
-    LoadImage(m_nIndex);
-
   m_proc = new QProcess(this);
   connect(m_proc, SIGNAL(readyReadStandardOutput()), SLOT(OnProcessOutputMessage()));
   connect(m_proc, SIGNAL(readyReadStandardError()), SLOT(OnProcessOutputMessage()));
@@ -84,9 +54,43 @@ MainWindow::~MainWindow()
   delete ui;
 }
 
+void MainWindow::ShowDialog()
+{
+  hide();
+  DialogWelcome dlg;
+  dlg.setWindowTitle(WND_TITLE);
+  if (dlg.exec() != QDialog::Accepted)
+  {
+    QTimer::singleShot(0, this, SLOT(close()));
+    return;
+  }
+
+  DialogSelectFolder dlgSelect;
+  dlgSelect.setWindowTitle(WND_TITLE);
+  if (dlgSelect.exec() != QDialog::Accepted)
+  {
+    QTimer::singleShot(0, this, SLOT(close()));
+    return;
+  }
+
+  show();
+  m_nNumberOfExpectedPoints = dlgSelect.IsFourPoint()?4:2;
+  ui->labelHeight->setVisible(m_nNumberOfExpectedPoints == 4);
+  ui->lineEditRulerHeight->setVisible(m_nNumberOfExpectedPoints == 4);
+
+  QString input_path = dlgSelect.GetInputPath();
+  m_listInputFiles = QDir(input_path).entryInfoList(QDir::Files, QDir::Name);
+  m_strOutputFolder = dlgSelect.GetOutputPath();
+
+  UpdateIndex();
+
+  if (!m_listInputFiles.isEmpty())
+    LoadImage(m_nIndex);
+}
+
 void MainWindow::SetupScriptPath()
 {
-  // setup script and resource files
+  // copy resource files
   static QTemporaryDir dir;
   QFile file(":/func_registration.py");
   file.open(QFile::ReadOnly | QFile::Text);

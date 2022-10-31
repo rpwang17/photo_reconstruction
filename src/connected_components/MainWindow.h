@@ -24,6 +24,7 @@ public slots:
   void OnButtonCreateMask();
   void OnButtonClear();
   void LoadImage(int n);
+  void ShowDialog();
 
 private slots:
   void OnProcessOutputMessage();

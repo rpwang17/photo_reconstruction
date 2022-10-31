@@ -51,6 +51,29 @@ MainWindow::MainWindow(QWidget *parent)
   if (rc.isValid() && QApplication::desktop()->screenGeometry(this).contains(rc))
     setGeometry(rc);
 
+  m_proc = new QProcess(this);
+  connect(m_proc, SIGNAL(readyReadStandardOutput()), SLOT(OnProcessOutputMessage()));
+  connect(m_proc, SIGNAL(readyReadStandardError()), SLOT(OnProcessOutputMessage()));
+  connect(m_proc, SIGNAL(finished(int, QProcess::ExitStatus)), SLOT(OnProcessFinished()));
+  connect(m_proc, SIGNAL(error(QProcess::ProcessError)), SLOT(OnProcessError(QProcess::ProcessError)));
+}
+
+MainWindow::~MainWindow()
+{
+  QSettings s;
+  s.setValue("MainWindow/Geometry", geometry());
+
+  if (m_proc && m_proc->state() == QProcess::Running)
+  {
+    m_proc->kill();
+    m_proc->waitForFinished();
+  }
+  delete ui;
+}
+
+void MainWindow::ShowDialog()
+{
+  hide();
   DialogWelcome dlg;
   dlg.setWindowTitle(WND_TITLE);
   if (dlg.exec() != QDialog::Accepted)
@@ -81,25 +104,6 @@ MainWindow::MainWindow(QWidget *parent)
     LoadImage(m_nIndex);
 
   UpdateIndex();
-
-  m_proc = new QProcess(this);
-  connect(m_proc, SIGNAL(readyReadStandardOutput()), SLOT(OnProcessOutputMessage()));
-  connect(m_proc, SIGNAL(readyReadStandardError()), SLOT(OnProcessOutputMessage()));
-  connect(m_proc, SIGNAL(finished(int, QProcess::ExitStatus)), SLOT(OnProcessFinished()));
-  connect(m_proc, SIGNAL(error(QProcess::ProcessError)), SLOT(OnProcessError(QProcess::ProcessError)));
-}
-
-MainWindow::~MainWindow()
-{
-  QSettings s;
-  s.setValue("MainWindow/Geometry", geometry());
-
-  if (m_proc && m_proc->state() == QProcess::Running)
-  {
-    m_proc->kill();
-    m_proc->waitForFinished();
-  }
-  delete ui;
 }
 
 void MainWindow::OnButtonNext()

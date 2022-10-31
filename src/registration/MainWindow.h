@@ -23,6 +23,7 @@ public slots:
   void OnButtonRegister();
   void OnButtonClear();
   void LoadImage(int n);
+  void ShowDialog();
 
 private slots:
   void OnProcessOutputMessage();
