@@ -32,6 +32,7 @@ public slots:
 private slots:
   void OnProcessStarted();
   void OnProcessOutputMessage();
+  void OnProcessErrorMessage();
   void OnProcessFinished();
   void OnProcessError(QProcess::ProcessError);
   void OnLastRegionEdited(int n);

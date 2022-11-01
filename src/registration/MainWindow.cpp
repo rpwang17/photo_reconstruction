@@ -38,10 +38,10 @@ MainWindow::MainWindow(QWidget *parent)
 
   m_proc = new QProcess(this);
   connect(m_proc, SIGNAL(readyReadStandardOutput()), SLOT(OnProcessOutputMessage()));
-  connect(m_proc, SIGNAL(readyReadStandardError()), SLOT(OnProcessOutputMessage()));
+  connect(m_proc, SIGNAL(readyReadStandardError()), SLOT(OnProcessErrorMessage()));
   connect(m_proc, SIGNAL(started()), SLOT(OnProcessStarted()));
   connect(m_proc, SIGNAL(finished(int, QProcess::ExitStatus)), SLOT(OnProcessFinished()));
-  connect(m_proc, SIGNAL(error(QProcess::ProcessError)), SLOT(OnProcessError(QProcess::ProcessError)));
+  connect(m_proc, SIGNAL(errorOccurred(QProcess::ProcessError)), SLOT(OnProcessError(QProcess::ProcessError)));
 }
 
 MainWindow::~MainWindow()
@@ -178,9 +178,31 @@ void MainWindow::OnButtonRegister()
   }
 }
 
-void MainWindow::OnProcessError(QProcess::ProcessError)
+void MainWindow::OnProcessError(QProcess::ProcessError er)
 {
-  QMessageBox::warning(this, "Error", "Error occurred during process.");
+  QString str = "Unknown error occurred during process.";
+  switch (er)
+  {
+  case QProcess::FailedToStart:
+    str = "Failed to start python script";
+    break;
+  case QProcess::Crashed:
+    str = "Process crashed";
+    break;
+  case QProcess::Timedout:
+    str = "Process timed out";
+    break;
+  case QProcess::ReadError:
+    str = "Failed to read";
+    break;
+  case QProcess::WriteError:
+    str = "Failed to write";
+    break;
+  default:
+    break;
+  }
+  m_proc->kill();
+  QMessageBox::warning(this, "Error", str);
 }
 
 void MainWindow::OnProcessStarted()
@@ -192,14 +214,24 @@ void MainWindow::OnProcessStarted()
 void MainWindow::OnProcessFinished()
 {
   ui->widgetImageView->HideMessage();
-  ui->pushButtonNext->setEnabled(true);
+  if (m_proc->exitStatus() == QProcess::NormalExit)
+    ui->pushButtonNext->setEnabled(true);
   ui->pushButtonRegister->setEnabled(true);
 }
 
 void MainWindow::OnProcessOutputMessage()
 {
-  qDebug() << m_proc->readAllStandardError();
   qDebug() << m_proc->readAllStandardOutput();
+}
+
+void MainWindow::OnProcessErrorMessage()
+{
+    QString str = m_proc->readAllStandardError().trimmed();
+    if (!str.isEmpty())
+    {
+      m_proc->kill();
+      QMessageBox::warning(this, "Error", str);
+    }
 }
 
 void MainWindow::OnButtonClear()
