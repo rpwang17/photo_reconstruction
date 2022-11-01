@@ -1,4 +1,5 @@
 include(../common.pri)
+TARGET = retrospective_correction
 
 SOURCES += \
     DialogSelectFolder.cpp \

@@ -61,6 +61,18 @@ public slots:
     m_nEditMode = n;
   }
 
+  void ShowMessage(const QString& msg)
+  {
+    m_sMessage = msg;
+    update();
+  }
+
+  void HideMessage()
+  {
+    m_sMessage.clear();
+    update();
+  }
+
   void AddOverlay(const QImage& overlay_image);
 
   void Clear();
@@ -88,6 +100,8 @@ private:
   QList<QPoint> m_listPoints;
   QList<RECT_REGION> m_listRegions;
   QColor    m_colorPen;
+
+  QString   m_sMessage;
 };
 
 #endif // WIDGETIMAGEVIEW_H

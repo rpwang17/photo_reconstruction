@@ -74,7 +74,7 @@
           <widget class="QLabel" name="label_2">
            <property name="text">
             <string>Left mouse button to pan, Right button to zoom, Ctrl+Left to draw. Please select slices in order. 
-Click &quot;Create Mask&quot; after you select all the slices.</string>
+Click &quot;Process Image&quot; after you select all the slices.</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>
@@ -147,7 +147,7 @@ Click &quot;Create Mask&quot; after you select all the slices.</string>
          <item>
           <widget class="QPushButton" name="pushButtonCreateMask">
            <property name="text">
-            <string>Create Mask</string>
+            <string>Process Image</string>
            </property>
           </widget>
          </item>

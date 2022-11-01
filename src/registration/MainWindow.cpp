@@ -12,7 +12,7 @@
 #include "CommonDef.h"
 #include <QTemporaryDir>
 
-#define WND_TITLE "Retrospective Registration"
+#define WND_TITLE "Retrospective Correction"
 
 MainWindow::MainWindow(QWidget *parent)
   : QMainWindow(parent)
@@ -37,6 +37,7 @@ MainWindow::MainWindow(QWidget *parent)
   m_proc = new QProcess(this);
   connect(m_proc, SIGNAL(readyReadStandardOutput()), SLOT(OnProcessOutputMessage()));
   connect(m_proc, SIGNAL(readyReadStandardError()), SLOT(OnProcessOutputMessage()));
+  connect(m_proc, SIGNAL(started()), SLOT(OnProcessStarted()));
   connect(m_proc, SIGNAL(finished(int, QProcess::ExitStatus)), SLOT(OnProcessFinished()));
   connect(m_proc, SIGNAL(error(QProcess::ProcessError)), SLOT(OnProcessError(QProcess::ProcessError)));
 }
@@ -180,9 +181,17 @@ void MainWindow::OnProcessError(QProcess::ProcessError)
   QMessageBox::warning(this, "Error", "Error occurred during process.");
 }
 
+void MainWindow::OnProcessStarted()
+{
+  ui->pushButtonRegister->setEnabled(false);
+  ui->widgetImageView->ShowMessage("Processing...");
+}
+
 void MainWindow::OnProcessFinished()
 {
+  ui->widgetImageView->HideMessage();
   ui->pushButtonNext->setEnabled(true);
+  ui->pushButtonRegister->setEnabled(true);
 }
 
 void MainWindow::OnProcessOutputMessage()

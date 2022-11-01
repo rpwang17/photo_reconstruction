@@ -15,17 +15,11 @@
 
 #define WND_TITLE "Connected Components"
 
-MainWindow::MainWindow(QWidget *parent)
+MainWindow::MainWindow(QWidget *parent, bool bProfiling)
   : QMainWindow(parent)
-  , ui(new Ui::MainWindow), m_nIndex(0)
+  , ui(new Ui::MainWindow), m_nIndex(0), m_bProfiling(bProfiling)
 {
   ui->setupUi(this);
-
-  m_labelWait = new QLabel(this);
-  m_labelWait->setMinimumSize(140, 36);
-  m_labelWait->setText("Computing ...");
-  m_labelWait->setStyleSheet("border:none;padding:8px;background-color:rgba(0,0,0,200);color:rgba(255,255,255,230);border-radius:12px;font-size:14px");
-  m_labelWait->hide();
 
   // setup script
   static QTemporaryDir dir;
@@ -196,13 +190,20 @@ void MainWindow::OnProcessError(QProcess::ProcessError)
 
 void MainWindow::OnProcessStarted()
 {
-  ShowWaitMessage(true);
+  ui->widgetImageView->ShowMessage("Processing...");
   ui->pushButtonCreateMask->setEnabled(false);
+  if (m_bProfiling)
+    m_timer.start();
 }
 
 void MainWindow::OnProcessFinished()
 {
   ui->widgetImageView->setEnabled(true);
+  if (m_bProfiling)
+  {
+    qDebug() << "Elapsed time by py script: " << m_timer.elapsed() << "ms";
+    m_timer.restart();
+  }
 
   int region_n = m_proc->property("region_index").toInt();
   QString fn = QFileInfo(ui->widgetImageView->GetFilename()).fileName();
@@ -222,8 +223,13 @@ void MainWindow::OnProcessFinished()
   if (!image.isNull())
     ui->widgetImageView->AddOverlay(image);
 
-  ShowWaitMessage(false);
+  ui->widgetImageView->HideMessage();
   ui->pushButtonCreateMask->setEnabled(true);
+  if (m_bProfiling)
+  {
+    qDebug() << "Elapsed time by image processing: " << m_timer.elapsed() << "ms";
+    m_timer.invalidate();
+  }
 }
 
 void MainWindow::OnProcessOutputMessage()
@@ -237,17 +243,4 @@ void MainWindow::UpdateIndex()
   ui->labelIndex->setText(tr("%1 / %2").arg(m_nIndex+1).arg(m_listInputFiles.size()));
   ui->pushButtonPrev->setEnabled(m_nIndex > 0 && m_proc->state() != QProcess::Running);
   ui->pushButtonNext->setEnabled(m_nIndex < m_listData.size());
-}
-
-void MainWindow::ShowWaitMessage(bool bShow)
-{
-  m_labelWait->setVisible(bShow);
-  if (bShow)
-  {
-    QRect rc = m_labelWait->geometry();
-    rc.moveCenter(ui->widgetImageView->geometry().center());
-    rc.moveBottom(ui->widgetImageView->geometry().bottom()-10);
-    m_labelWait->setGeometry(rc);
-    m_labelWait->raise();
-  }
 }

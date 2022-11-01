@@ -14,6 +14,7 @@ WidgetImageView::WidgetImageView(QWidget *parent)
 
 bool WidgetImageView::LoadImage(const QString& filename, const QString& mask, const QList<QPoint>& points, const QList<RECT_REGION>& regions)
 {
+  m_sMessage.clear();
   m_sFilename = filename;
   m_sMaskFilename = mask;
   PrepareImage();
@@ -96,6 +97,21 @@ void WidgetImageView::paintEvent(QPaintEvent *e)
       p.drawRect(rc);
     }
   }
+  if (!m_sMessage.isEmpty())
+  {
+    QFont f = p.font();
+    f.setPixelSize(16);
+    p.setFont(f);
+    QRect rc = p.fontMetrics().boundingRect(m_sMessage);
+    rc.adjust(-20,-9, 20, 9);
+    rc.moveCenter(rect().center());
+    rc.moveBottom(rect().bottom()-18);
+    p.setPen(Qt::NoPen);
+    p.setBrush(QColor(0,0,0,200));
+    p.drawRoundedRect(rc, rc.height()/2, rc.height()/2);
+    p.setPen(Qt::white);
+    p.drawText(rc, m_sMessage, Qt::AlignHCenter|Qt::AlignVCenter);
+  }
 }
 
 void WidgetImageView::mousePressEvent(QMouseEvent *e)
@@ -147,7 +163,11 @@ void WidgetImageView::mouseReleaseEvent(QMouseEvent *e)
     else if (m_nEditMode == EM_REGION)
     {
       update();
-      emit LastRegionEdited(m_listRegions.size()-1);
+      QPoint pt = m_listRegions.last().first - m_listRegions.last().second;
+      if (qAbs(pt.x()) < 3 || qAbs(pt.y()) < 3)
+        m_listRegions.removeLast();
+      else
+        emit LastRegionEdited(m_listRegions.size()-1);
     }
   }
   else if (m_bZooming)

@@ -226,7 +226,7 @@
      <item>
       <widget class="QPushButton" name="pushButton_2">
        <property name="text">
-        <string>Register Images</string>
+        <string>Continue</string>
        </property>
       </widget>
      </item>

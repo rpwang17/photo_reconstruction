@@ -223,7 +223,7 @@
          <item>
           <widget class="QPushButton" name="pushButtonRegister">
            <property name="text">
-            <string>Register</string>
+            <string>Process</string>
            </property>
           </widget>
          </item>
