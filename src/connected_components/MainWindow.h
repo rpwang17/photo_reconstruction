@@ -18,7 +18,7 @@ class MainWindow : public QMainWindow
   Q_OBJECT
 
 public:
-  MainWindow(QWidget *parent = nullptr, bool bProfiling = false);
+  MainWindow(QWidget *parent = nullptr);
   ~MainWindow();
 
 public slots:
@@ -40,6 +40,11 @@ private:
   void UpdateIndex();
   void CreateComponents(const QList<RECT_REGION>& rects, bool bTemp = false);
 
+public:
+  bool      m_bProfiling;
+  QString   m_strPythonCmd;
+
+private:
   Ui::MainWindow *ui;
   QFileInfoList  m_listInputFiles;
   QFileInfoList  m_listMaskFiles;
@@ -52,7 +57,6 @@ private:
 
   QProcess* m_proc;
   QString   m_strTempFolder;
-  bool      m_bProfiling;
   QElapsedTimer m_timer;
 };
 #endif // MAINWINDOW_H

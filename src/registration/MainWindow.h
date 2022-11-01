@@ -31,6 +31,9 @@ private slots:
   void OnProcessFinished();
   void OnProcessError(QProcess::ProcessError);
 
+public:
+  QString m_strPythonCmd;
+
 private:
   void UpdateIndex();
   void SetupScriptPath();

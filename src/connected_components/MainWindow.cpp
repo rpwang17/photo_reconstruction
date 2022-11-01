@@ -15,11 +15,13 @@
 
 #define WND_TITLE "Connected Components"
 
-MainWindow::MainWindow(QWidget *parent, bool bProfiling)
+MainWindow::MainWindow(QWidget *parent)
   : QMainWindow(parent)
-  , ui(new Ui::MainWindow), m_nIndex(0), m_bProfiling(bProfiling)
+  , ui(new Ui::MainWindow), m_nIndex(0), m_bProfiling(false)
 {
   ui->setupUi(this);
+
+  m_strPythonCmd = PY_COMMAND;
 
   // setup script
   static QTemporaryDir dir;
@@ -149,7 +151,7 @@ void MainWindow::CreateComponents(const QList<RECT_REGION>& rects, bool bTemp)
     strList << QString::number(rc.first.x()) << QString::number(rc.first.y())
             << QString::number(rc.second.x()) << QString::number(rc.second.y());
   QStringList cmd;
-  cmd << PY_COMMAND << m_strPyScriptPath
+  cmd << m_strPythonCmd << m_strPyScriptPath
        << "--in_img" << ui->widgetImageView->GetFilename()
        << "--rectangle_coordinates" << strList.join(" ")
        << "--in_mask" << ui->widgetImageView->GetMaskFilename()

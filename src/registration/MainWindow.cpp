@@ -20,6 +20,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
   ui->setupUi(this);
 
+  m_strPythonCmd = PY_COMMAND;
+
   QSettings s;
   QRect rc = s.value("MainWindow/Geometry").toRect();
   if (rc.isValid() && QApplication::desktop()->screenGeometry(this).contains(rc))
@@ -166,7 +168,7 @@ void MainWindow::OnButtonRegister()
     foreach (QPoint pt, pts)
       strList << QString::number(pt.x()) << QString::number(pt.y());
     QStringList cmd;
-    cmd << PY_COMMAND << m_strPyScriptPath
+    cmd << m_strPythonCmd << m_strPyScriptPath
         << "--in_img" << ui->widgetImageView->GetFilename()
         << "--points" << strList.join(" ")
         << "--width" << QString::number(dWidth)
