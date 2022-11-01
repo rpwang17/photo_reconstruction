@@ -238,7 +238,8 @@ void MainWindow::OnProcessFinished()
     image = NumpyHelper::NumpyToImage(QFileInfo(m_strOutputFolder, fn).absoluteFilePath(),
                                              m_listStockColors);
     if (m_proc->exitStatus() == QProcess::NormalExit)
-      ui->pushButtonNext->setEnabled(true);  }
+      ui->pushButtonNext->setEnabled(true);
+  }
   else
   {
     image = NumpyHelper::NumpyToImage(QFileInfo(m_strTempFolder, fn).absoluteFilePath(),

@@ -1,6 +1,7 @@
 #include "NumpyHelper.h"
 #include "cnpy.h"
 #include <QDebug>
+#include <QFile>
 
 NumpyHelper::NumpyHelper()
 {
@@ -13,6 +14,11 @@ QImage NumpyHelper::NumpyToImage(const QString& npy_in, const QColor& replace_co
 
 QImage NumpyHelper::NumpyToImage(const QString& npy_in, const QList<QColor>& colors)
 {
+  if (!QFile::exists(npy_in))
+  {
+    qDebug() << "File does not exist:" << npy_in;
+    return QImage();
+  }
   cnpy::NpyArray ar = cnpy::npy_load(qPrintable(npy_in));
   if (ar.shape.size() != 2)
   {
