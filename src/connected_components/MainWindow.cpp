@@ -208,8 +208,7 @@ void MainWindow::OnProcessError(QProcess::ProcessError er)
   default:
     break;
   }
-  m_proc->kill();
-  QMessageBox::warning(this, "Error", str);
+  qDebug() << str;
 }
 
 void MainWindow::OnProcessStarted()
@@ -267,8 +266,7 @@ void MainWindow::OnProcessErrorMessage()
     QString str = m_proc->readAllStandardError().trimmed();
     if (!str.isEmpty())
     {
-      m_proc->kill();
-      QMessageBox::warning(this, "Error", str);
+      qDebug() << str;
     }
 }
 
