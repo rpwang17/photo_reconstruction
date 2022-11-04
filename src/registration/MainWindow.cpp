@@ -99,9 +99,9 @@ void MainWindow::SetupScriptPath()
   file.open(QFile::ReadOnly | QFile::Text);
   QTextStream in(&file);
   QString str = in.readAll();
-  str.replace("./horizontal.png", dir.filePath("horizontal.png"));
-  str.replace("./vertical.png", dir.filePath("vertical.png"));
-  QFile file2(dir.filePath("func_registration.py"));
+  str.replace("./horizontal.png", QFileInfo(dir.path(),"horizontal.png").absoluteFilePath());
+  str.replace("./vertical.png", QFileInfo(dir.path(),"vertical.png").absoluteFilePath());
+  QFile file2(QFileInfo(dir.path(),"func_registration.py").absoluteFilePath());
   if (file2.open(QFile::ReadWrite))
   {
     QTextStream out(&file2);
@@ -109,9 +109,9 @@ void MainWindow::SetupScriptPath()
   }
   file2.close();
   file2.flush();
-  QFile::copy(":/horizontal.png", dir.filePath("horizontal.png"));
-  QFile::copy(":/vertical.png", dir.filePath("vertical.png"));
-  m_strPyScriptPath = dir.filePath("func_registration.py");
+  QFile::copy(":/horizontal.png", QFileInfo(dir.path(),"horizontal.png").absoluteFilePath());
+  QFile::copy(":/vertical.png", QFileInfo(dir.path(),"vertical.png").absoluteFilePath());
+  m_strPyScriptPath = QFileInfo(dir.path(),"func_registration.py").absoluteFilePath();
 
   if (!QFile::exists(m_strPyScriptPath))
   {

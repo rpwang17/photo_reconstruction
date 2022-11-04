@@ -26,8 +26,8 @@ MainWindow::MainWindow(QWidget *parent)
   // setup script
   static QTemporaryDir dir;
   m_strTempFolder = dir.path();
-  QFile::copy(":/func_masking.py", dir.filePath("func_masking.py"));
-  m_strPyScriptPath = dir.filePath("func_masking.py");
+  m_strPyScriptPath = QFileInfo(dir.path(),"func_masking.py").absoluteFilePath();
+  QFile::copy(":/func_masking.py", m_strPyScriptPath);
 
   if (!QFile::exists(m_strPyScriptPath))
   {
