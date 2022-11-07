@@ -75,7 +75,7 @@ void WidgetImageView::paintEvent(QPaintEvent *e)
       p.drawEllipse(pt, 2, 2);
       pts << pt;
     }
-    if (pts.size() > 1)
+    if (pts.size() > 1 && m_nNumberOfExpectedPoints == 2)
     {
       p.setPen(QPen(m_colorPen, 2));
       p.drawLine(pts[0], pts[1]);

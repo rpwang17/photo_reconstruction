@@ -81,6 +81,7 @@ void MainWindow::ShowDialog()
   m_nNumberOfExpectedPoints = dlgSelect.IsFourPoint()?4:2;
   ui->labelHeight->setVisible(m_nNumberOfExpectedPoints == 4);
   ui->lineEditRulerHeight->setVisible(m_nNumberOfExpectedPoints == 4);
+  ui->widgetImageView->SetNumberOfExpectedPoints(m_nNumberOfExpectedPoints);
 
   QString input_path = dlgSelect.GetInputPath();
   m_listInputFiles = QDir(input_path).entryInfoList(QDir::Files, QDir::Name);
