@@ -1,5 +1,4 @@
 include(../common.pri)
-TARGET = retrospective_correction
 
 SOURCES += \
     DialogSelectFolder.cpp \
@@ -18,5 +17,5 @@ FORMS += \
     MainWindow.ui
 
 RESOURCES += \
-  registration.qrc
+  retrospective_correction.qrc
 

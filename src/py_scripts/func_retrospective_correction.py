@@ -26,8 +26,11 @@ class SplitArgs(argparse.Action):
         return coords
 
 
-def perform_registration(args):
+def retrospective_correction(args):
     """This function performs the registration and close the GUI automatically"""
+
+    if not os.path.exists(args.out_dir):
+        os.makedirs(args.out_dir, exist_ok=True)
 
     args.horizontal_ruler = cv2.imread("./horizontal.png")
     args.vertical_ruler = cv2.imread("./vertical.png")
@@ -175,7 +178,7 @@ if __name__ == "__main__":
 
     if gettrace():
         sys.argv = [
-            "func_registration.py",
+            "func_retrospective_correction.py",
             "--in_img",
             "/space/calico/1/users/Harsha/photo-calibration-gui/misc/photos/2604.01.JPG",
             "--points",
@@ -190,10 +193,10 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    perform_registration(args)
+    retrospective_correction(args)
 
     # example call:
-    # fspython func_registration.py \
+    # fspython func_retrospective_correction.py \
     #   --in_img /space/calico/1/users/Harsha/photo-calibration-gui/misc/photos/2604.01.JPG \
     #   --points 431 621 481 621 \
     #   --width 10 --height 15 \

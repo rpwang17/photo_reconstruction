@@ -13,6 +13,7 @@
 #include <QTemporaryDir>
 
 #define WND_TITLE "Retrospective Correction"
+#define SCRIPT_FILENAME "func_retrospective_correction.py"
 
 MainWindow::MainWindow(QWidget *parent)
   : QMainWindow(parent)
@@ -95,13 +96,13 @@ void MainWindow::SetupScriptPath()
 {
   // copy resource files
   static QTemporaryDir dir;
-  QFile file(":/func_registration.py");
+  QFile file(QString(":/")+SCRIPT_FILENAME);
   file.open(QFile::ReadOnly | QFile::Text);
   QTextStream in(&file);
   QString str = in.readAll();
   str.replace("./horizontal.png", QFileInfo(dir.path(),"horizontal.png").absoluteFilePath());
   str.replace("./vertical.png", QFileInfo(dir.path(),"vertical.png").absoluteFilePath());
-  QFile file2(QFileInfo(dir.path(),"func_registration.py").absoluteFilePath());
+  QFile file2(QFileInfo(dir.path(),SCRIPT_FILENAME).absoluteFilePath());
   if (file2.open(QFile::ReadWrite))
   {
     QTextStream out(&file2);
@@ -111,11 +112,11 @@ void MainWindow::SetupScriptPath()
   file2.flush();
   QFile::copy(":/horizontal.png", QFileInfo(dir.path(),"horizontal.png").absoluteFilePath());
   QFile::copy(":/vertical.png", QFileInfo(dir.path(),"vertical.png").absoluteFilePath());
-  m_strPyScriptPath = QFileInfo(dir.path(),"func_registration.py").absoluteFilePath();
+  m_strPyScriptPath = QFileInfo(dir.path(),SCRIPT_FILENAME).absoluteFilePath();
 
   if (!QFile::exists(m_strPyScriptPath))
   {
-    QMessageBox::critical(this, "Error", "Could not locate func_registration.py script");
+    QMessageBox::critical(this, "Error", tr("Could not locate %1 script").arg(SCRIPT_FILENAME));
     qApp->quit();
   }
 }
