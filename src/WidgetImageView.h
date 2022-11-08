@@ -73,7 +73,11 @@ public slots:
     update();
   }
 
-  void AddOverlay(const QImage& overlay_image);
+  void SetOverlay(const QImage& overlay_image);
+  void ClearOverlay()
+  {
+    SetOverlay(QImage());
+  }
 
   void Clear();
 
@@ -86,6 +90,7 @@ private:
   QString   m_sMaskFilename;
   QImage    m_image;
   QImage    m_imageScaled;
+  QImage    m_imageOverlay;
   double    m_dScale;
   double    m_dOldScale;
   QPoint    m_ptOffset;

@@ -6,6 +6,7 @@
 #include <QProcess>
 #include "WidgetImageView.h"
 #include <QElapsedTimer>
+#include "MaskProcessor.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -39,7 +40,6 @@ private slots:
 
 private:
   void UpdateIndex();
-  void CreateComponents(const QList<RECT_REGION>& rects, bool bTemp = false);
 
 public:
   bool      m_bProfiling;
@@ -59,5 +59,7 @@ private:
   QProcess* m_proc;
   QString   m_strTempFolder;
   QElapsedTimer m_timer;
+
+  MaskProcessor m_maskProcessor;
 };
 #endif // MAINWINDOW_H

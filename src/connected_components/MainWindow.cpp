@@ -9,7 +9,6 @@
 #include <QMessageBox>
 #include <QSettings>
 #include <QDesktopWidget>
-#include "NumpyHelper.h"
 #include "CommonDef.h"
 #include <QTemporaryDir>
 
@@ -26,12 +25,12 @@ MainWindow::MainWindow(QWidget *parent)
   // setup script
   static QTemporaryDir dir;
   m_strTempFolder = dir.path();
-  m_strPyScriptPath = QFileInfo(dir.path(),"func_masking.py").absoluteFilePath();
-  QFile::copy(":/func_masking.py", m_strPyScriptPath);
+  m_strPyScriptPath = QFileInfo(dir.path(),"func_mask_to_cc.py").absoluteFilePath();
+  QFile::copy(":/func_mask_to_cc.py", m_strPyScriptPath);
 
   if (!QFile::exists(m_strPyScriptPath))
   {
-    QMessageBox::critical(this, "Error", "Could not locate func_masking.py script");
+    QMessageBox::critical(this, "Error", "Could not locate func_mask_to_cc.py script");
     qApp->quit();
   }
 
@@ -104,8 +103,12 @@ void MainWindow::ShowDialog()
 
   m_strOutputFolder = dlgSelect.GetOutputPath();
 
-  if (!m_listInputFiles.isEmpty() && !m_listMaskFiles.isEmpty())
-    LoadImage(m_nIndex);
+  QStringList cmd;
+  cmd << m_strPythonCmd << m_strPyScriptPath
+       << "--in_dir" << dlgSelect.GetMaskPath()
+       << "--out_dir" << m_strTempFolder;
+  qDebug() << m_strTempFolder;
+  m_proc->start(cmd.join(" "));
 
   UpdateIndex();
 }
@@ -114,9 +117,9 @@ void MainWindow::OnButtonNext()
 {
   if (m_nIndex < m_listInputFiles.size()-1)
   {
+    ui->pushButtonNext->setEnabled(false);
     LoadImage(++m_nIndex);
     UpdateIndex();
-    ui->pushButtonNext->setEnabled(false);
   }
   else
   {
@@ -140,39 +143,31 @@ void MainWindow::OnButtonCreateMask()
   else
     m_listData << list;
 
-  m_proc->setProperty("region_index", -1);
-  CreateComponents(list);
-}
-
-void MainWindow::CreateComponents(const QList<RECT_REGION>& rects, bool bTemp)
-{
-  QStringList strList;
-  foreach (RECT_REGION rc, rects)
-    strList << QString::number(rc.first.x()) << QString::number(rc.first.y())
-            << QString::number(rc.second.x()) << QString::number(rc.second.y());
-  QStringList cmd;
-  cmd << m_strPythonCmd << m_strPyScriptPath
-       << "--in_img" << ui->widgetImageView->GetFilename()
-       << "--rectangle_coordinates" << strList.join(" ")
-       << "--in_mask" << ui->widgetImageView->GetMaskFilename()
-       << "--out_dir" << (bTemp?m_strTempFolder:m_strOutputFolder);
-  m_proc->start(cmd.join(" "));
+//  CreateComponents(list);
+  QString fn = QFileInfo(ui->widgetImageView->GetFilename()).fileName();
+  fn.replace(".jpg", "_mask.npy", Qt::CaseInsensitive);
+  m_maskProcessor.SaveToNpy(QFileInfo(m_strOutputFolder, fn).absoluteFilePath());
+  ui->pushButtonNext->setEnabled(true);
 }
 
 void MainWindow::OnLastRegionEdited(int n)
 {
-  m_proc->setProperty("region_index", n);
-  QList<RECT_REGION> list;
-  list << ui->widgetImageView->GetEditedRegions().last();
-  ui->pushButtonNext->setEnabled(false);
-  ui->widgetImageView->setEnabled(false);
-  CreateComponents(list, true);
+  RECT_REGION rc = ui->widgetImageView->GetEditedRegions().last();
+  if (m_maskProcessor.ProcessSelection(rc.first, rc.second, n+1))
+  {
+    ui->widgetImageView->SetOverlay(m_maskProcessor.GetMaskImage(m_listStockColors));
+  }
+  else
+  {
+    QMessageBox::warning(this, "Error", "Did not find any new slice");
+  }
 }
 
 void MainWindow::OnButtonClear()
 {
   ui->widgetImageView->Clear();
   ui->pushButtonNext->setEnabled(false);
+  m_maskProcessor.ClearBuffer();
 }
 
 void MainWindow::LoadImage(int n)
@@ -182,8 +177,23 @@ void MainWindow::LoadImage(int n)
     rects = m_listData[n];
   ui->widgetImageView->LoadImage(m_listInputFiles[n].absoluteFilePath(), m_listMaskFiles[n].absoluteFilePath(),
                                  QList<QPoint>(), rects);
+  QString mask_fn = m_listMaskFiles[n].fileName();
+  mask_fn.replace(".png", ".npy");
+  if (!m_maskProcessor.Load(QFileInfo(m_strTempFolder, mask_fn).absoluteFilePath()))
+  {
+    QMessageBox::warning(this, "Error", "Failed to load processed npy files");
+    return;
+  }
+
   if (!rects.isEmpty())
-    OnButtonCreateMask();
+  {
+    QList<QPoint> pts;
+    foreach (RECT_REGION r, rects)
+      pts << r.first << r.second;
+    m_maskProcessor.LoadSelections(pts);
+    ui->widgetImageView->SetOverlay(m_maskProcessor.GetMaskImage(m_listStockColors));
+    ui->pushButtonNext->setEnabled(true);
+  }
 }
 void MainWindow::OnProcessError(QProcess::ProcessError er)
 {
@@ -213,7 +223,8 @@ void MainWindow::OnProcessError(QProcess::ProcessError er)
 
 void MainWindow::OnProcessStarted()
 {
-  ui->widgetImageView->ShowMessage("Processing...");
+  ui->widgetImageView->ShowMessage("Initializing...");
+  ui->widgetImageView->setDisabled(true);
   ui->pushButtonCreateMask->setEnabled(false);
   if (m_bProfiling)
     m_timer.start();
@@ -222,30 +233,8 @@ void MainWindow::OnProcessStarted()
 void MainWindow::OnProcessFinished()
 {
   ui->widgetImageView->setEnabled(true);
-  if (m_bProfiling)
-  {
-    qDebug() << "Elapsed time by py script: " << m_timer.elapsed() << "ms";
-    m_timer.restart();
-  }
-
-  int region_n = m_proc->property("region_index").toInt();
-  QString fn = QFileInfo(ui->widgetImageView->GetFilename()).fileName();
-  fn.replace(".JPG", "_mask.npy", Qt::CaseInsensitive);
-  QImage image;
-  if (region_n < 0)
-  {
-    image = NumpyHelper::NumpyToImage(QFileInfo(m_strOutputFolder, fn).absoluteFilePath(),
-                                             m_listStockColors);
-    if (m_proc->exitStatus() == QProcess::NormalExit)
-      ui->pushButtonNext->setEnabled(true);
-  }
-  else
-  {
-    image = NumpyHelper::NumpyToImage(QFileInfo(m_strTempFolder, fn).absoluteFilePath(),
-                                             m_listStockColors[region_n%m_listStockColors.size()]);
-  }
-  if (!image.isNull())
-    ui->widgetImageView->AddOverlay(image);
+  if (!m_listInputFiles.isEmpty() && !m_listMaskFiles.isEmpty())
+    LoadImage(0);
 
   ui->widgetImageView->HideMessage();
   ui->pushButtonCreateMask->setEnabled(true);

@@ -3,13 +3,15 @@ include(../common.pri)
 SOURCES += \
     DialogSelectFolder.cpp \
     DialogWelcome.cpp \
+    MaskProcessor.cpp \
     main.cpp \
     MainWindow.cpp
 
 HEADERS += \
     DialogSelectFolder.h \
     DialogWelcome.h \
-    MainWindow.h 
+    MainWindow.h  \
+    MaskProcessor.h
 
 FORMS += \
     DialogSelectFolder.ui \
@@ -18,4 +20,7 @@ FORMS += \
 
 RESOURCES += \
   connected_components.qrc
+
+DISTFILES += \
+  ../py_scripts/func_mask_to_cc.py
 

@@ -17,6 +17,7 @@ bool WidgetImageView::LoadImage(const QString& filename, const QString& mask, co
   m_sMessage.clear();
   m_sFilename = filename;
   m_sMaskFilename = mask;
+  m_imageOverlay = QImage();
   PrepareImage();
   if (!m_image.isNull())
   {
@@ -45,14 +46,19 @@ void WidgetImageView::PrepareImage()
       p.drawImage(0, 0, mask_image);
       p.end();
     }
+    if (!m_imageOverlay.isNull())
+    {
+      QPainter p(&m_image);
+      p.drawImage(0, 0, m_imageOverlay);
+      p.end();
+    }
   }
 }
 
-void WidgetImageView::AddOverlay(const QImage& overlay_image)
+void WidgetImageView::SetOverlay(const QImage& overlay_image)
 {
-  QPainter p(&m_image);
-  p.drawImage(0, 0, overlay_image);
-  p.end();
+  m_imageOverlay = overlay_image;
+  PrepareImage();
   UpdateScaledImage();
 }
 
@@ -249,6 +255,7 @@ void WidgetImageView::Clear()
 {
   m_listPoints.clear();
   m_listRegions.clear();
+  m_imageOverlay = QImage();
   PrepareImage();
   UpdateScaledImage();
   update();
