@@ -38,7 +38,7 @@ def mask_to_cc(args):
         # Save connected components
         file_name = os.path.split(current_mask)[-1]
         file_name, _ = os.path.splitext(file_name)
-        np.save(os.path.join(args.out_dir, file_name), connected_components)
+        np.save(os.path.join(args.out_dir, file_name), connected_components.astype('uint8'))
 
 
 if __name__ == "__main__":

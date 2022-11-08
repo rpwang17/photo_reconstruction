@@ -7,6 +7,10 @@
 #include <QColor>
 #include <QImage>
 
+#ifndef PY_DATA_TYPE
+#define PY_DATA_TYPE unsigned char
+#endif
+
 class MaskProcessor
 {
 public:
@@ -25,8 +29,8 @@ public:
 private:
   void ClearData();
 
-  unsigned int* m_data;
-  unsigned int* m_dataInBuffer;
+  PY_DATA_TYPE* m_data;
+  PY_DATA_TYPE* m_dataInBuffer;
   unsigned char* m_dataOutBuffer;
   int m_nWidth;
   int m_nHeight;

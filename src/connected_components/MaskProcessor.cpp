@@ -44,16 +44,16 @@ bool MaskProcessor::Load(const QString& npy_in)
   }
 
   ClearData();
-  unsigned int* ptr = ar.data<unsigned int>();
+  PY_DATA_TYPE* ptr = ar.data<PY_DATA_TYPE>();
   int nsize = ar.shape[1] * ar.shape[0];
   m_nWidth = ar.shape[1];
   m_nHeight = ar.shape[0];
 
-  m_dataInBuffer = new unsigned int[nsize];
-  memcpy(m_dataInBuffer, ptr, nsize*sizeof(unsigned int));
+  m_dataInBuffer = new PY_DATA_TYPE[nsize];
+  memcpy(m_dataInBuffer, ptr, nsize*sizeof(PY_DATA_TYPE));
 
-  m_data = new unsigned int[nsize];
-  memcpy(m_data, ptr, nsize*sizeof(unsigned int));
+  m_data = new PY_DATA_TYPE[nsize];
+  memcpy(m_data, ptr, nsize*sizeof(PY_DATA_TYPE));
 
   m_dataOutBuffer = new unsigned char[nsize];
   memset(m_dataOutBuffer, 0, nsize);
@@ -122,7 +122,7 @@ QImage MaskProcessor::GetMaskImage(const QList<QColor>& colors)
 
 void MaskProcessor::ClearBuffer()
 {
-  memcpy(m_data, m_dataInBuffer, m_nWidth*m_nHeight*sizeof(unsigned int));
+  memcpy(m_data, m_dataInBuffer, m_nWidth*m_nHeight*sizeof(PY_DATA_TYPE));
   memset(m_dataOutBuffer, 0, m_nWidth*m_nHeight);
 }
 

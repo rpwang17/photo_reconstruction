@@ -107,7 +107,6 @@ void MainWindow::ShowDialog()
   cmd << m_strPythonCmd << m_strPyScriptPath
        << "--in_dir" << dlgSelect.GetMaskPath()
        << "--out_dir" << m_strTempFolder;
-  qDebug() << m_strTempFolder;
   m_proc->start(cmd.join(" "));
 
   UpdateIndex();
