@@ -177,7 +177,7 @@ void MainWindow::LoadImage(int n)
   ui->widgetImageView->LoadImage(m_listInputFiles[n].absoluteFilePath(), m_listMaskFiles[n].absoluteFilePath(),
                                  QList<QPoint>(), rects);
   QString mask_fn = m_listMaskFiles[n].fileName();
-  mask_fn.replace(".png", ".npy");
+  mask_fn.replace(".png", ".npz");
   if (!m_maskProcessor.Load(QFileInfo(m_strTempFolder, mask_fn).absoluteFilePath()))
   {
     QMessageBox::warning(this, "Error", "Failed to load processed npy files");

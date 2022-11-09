@@ -8,7 +8,7 @@
 #include <QImage>
 
 #ifndef PY_DATA_TYPE
-#define PY_DATA_TYPE unsigned char
+#define PY_DATA_TYPE uint16_t
 #endif
 
 class MaskProcessor

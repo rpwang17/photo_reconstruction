@@ -36,7 +36,7 @@ bool MaskProcessor::Load(const QString& npy_in)
     qDebug() << "File does not exist:" << npy_in;
     return false;
   }
-  cnpy::NpyArray ar = cnpy::npy_load(qPrintable(npy_in));
+  cnpy::NpyArray ar = cnpy::npz_load(qPrintable(npy_in), "cc");
   if (ar.shape.size() != 2)
   {
     qDebug() << "Could not load numpy file " << npy_in;
