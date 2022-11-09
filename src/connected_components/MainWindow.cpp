@@ -135,14 +135,12 @@ void MainWindow::OnButtonPrev()
 
 void MainWindow::OnButtonCreateMask()
 {
-  // execute script here
   QList<RECT_REGION> list = ui->widgetImageView->GetEditedRegions();
   if (m_nIndex < m_listData.size())
     m_listData[m_nIndex] = list;
   else
     m_listData << list;
 
-//  CreateComponents(list);
   QString fn = QFileInfo(ui->widgetImageView->GetFilename()).fileName();
   fn.replace(".jpg", "_mask.npy", Qt::CaseInsensitive);
   m_maskProcessor.SaveToNpy(QFileInfo(m_strOutputFolder, fn).absoluteFilePath());
