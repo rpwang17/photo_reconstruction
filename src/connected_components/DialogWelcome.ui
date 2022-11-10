@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>568</width>
-    <height>239</height>
+    <height>254</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -27,7 +27,7 @@
     <number>30</number>
    </property>
    <property name="bottomMargin">
-    <number>15</number>
+    <number>20</number>
    </property>
    <item>
     <widget class="QLabel" name="label">
@@ -64,28 +64,7 @@
    <item>
     <widget class="QLabel" name="label_2">
      <property name="text">
-      <string>1. Select the directory where the input images are</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QLabel" name="label_3">
-     <property name="text">
-      <string>2. Select the directory where the input mask are</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QLabel" name="label_4">
-     <property name="text">
-      <string>3. Select the directory where you want the output masks saved</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QLabel" name="label_5">
-     <property name="text">
-      <string>4. For each image, select slices in order</string>
+      <string>&lt;p&gt;1. Select the directory where the input images are. &lt;/p&gt;&lt;p&gt;2. Select the directory where the input mask are. &lt;/p&gt;&lt;p&gt;3. Select the directory where you want the output masks saved. &lt;/p&gt;&lt;p&gt;4. For each image, select slices in order.&lt;/p&gt;</string>
      </property>
     </widget>
    </item>

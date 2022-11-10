@@ -45,10 +45,11 @@ public:
     return m_sMaskFilename;
   }
 
-  enum EditMode { EM_POINT = 0, EM_REGION };
+  enum EditMode { EM_POINT = 0, EM_REGION, EM_CALIBRATION };
 
 signals:
   void LastRegionEdited(int n);
+  void CalibrationReady(const QList<QPoint>& pts);
 
 public slots:
   void SetNumberOfExpectedPoints(int n)
@@ -56,10 +57,7 @@ public slots:
     m_nNumberOfExpectedPoints = n;
   }
 
-  void SetEditMode(int n)
-  {
-    m_nEditMode = n;
-  }
+  void SetEditMode(int n);
 
   void ShowMessage(const QString& msg)
   {
@@ -79,7 +77,7 @@ public slots:
     SetOverlay(QImage());
   }
 
-  void Clear();
+  void ClearEdits();
 
 private:
   void PrepareImage();

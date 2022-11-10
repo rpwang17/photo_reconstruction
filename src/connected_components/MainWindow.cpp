@@ -31,7 +31,7 @@ MainWindow::MainWindow(QWidget *parent)
   if (!QFile::exists(m_strPyScriptPath))
   {
     QMessageBox::critical(this, "Error", "Could not locate func_mask_to_cc.py script");
-    qApp->quit();
+    QTimer::singleShot(0, qApp, SLOT(quit()));
   }
 
   m_listStockColors << QColor(255,100,100) << QColor(255,255,100) << QColor(100,255,100)
@@ -162,7 +162,7 @@ void MainWindow::OnLastRegionEdited(int n)
 
 void MainWindow::OnButtonClear()
 {
-  ui->widgetImageView->Clear();
+  ui->widgetImageView->ClearEdits();
   ui->pushButtonNext->setEnabled(false);
   m_maskProcessor.ClearBuffer();
 }

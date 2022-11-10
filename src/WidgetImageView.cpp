@@ -55,6 +55,14 @@ void WidgetImageView::PrepareImage()
   }
 }
 
+void WidgetImageView::SetEditMode(int n)
+{
+  m_nEditMode = n;
+  if (n == EM_CALIBRATION)
+    m_nNumberOfExpectedPoints = 8;
+}
+
+
 void WidgetImageView::SetOverlay(const QImage& overlay_image)
 {
   m_imageOverlay = overlay_image;
@@ -70,7 +78,7 @@ void WidgetImageView::paintEvent(QPaintEvent *e)
   QRect target = m_imageScaled.rect();
   target.moveCenter(rect().center()+m_ptOffset);
   p.drawImage(target, m_imageScaled);
-  if (m_nEditMode == 0)
+  if (m_nEditMode == EM_POINT)
   {
     p.setPen(m_colorPen);
     p.setBrush(m_colorPen);
@@ -87,7 +95,7 @@ void WidgetImageView::paintEvent(QPaintEvent *e)
       p.drawLine(pts[0], pts[1]);
     }
   }
-  else if (m_nEditMode == 1)
+  else if (m_nEditMode == EM_REGION)
   {
     QColor pen_color(255,255,255);
     QColor active_color(255,30,30);
@@ -101,6 +109,29 @@ void WidgetImageView::paintEvent(QPaintEvent *e)
       QRect rc(m_listRegions[i].first*m_imageScaled.width()/m_image.width() + target.topLeft(),
                m_listRegions[i].second*m_imageScaled.width()/m_image.width() + target.topLeft());
       p.drawRect(rc);
+    }
+  }
+  else if (m_nEditMode == EM_CALIBRATION)
+  {
+    for (int i = 0; i < m_listPoints.size(); i++)
+    {
+      QPoint pt = m_listPoints[i];
+      pt = pt*m_imageScaled.width()/m_image.width() + target.topLeft();
+      if (i%2 == 0)
+      {
+        p.setBrush(m_colorPen);
+        p.setPen(m_colorPen);
+        p.drawEllipse(pt, 2, 2);
+      }
+      else if (i%2 == 1)
+      {
+        QPoint prev_pt = m_listPoints[i-1];
+        prev_pt = prev_pt*m_imageScaled.width()/m_image.width() + target.topLeft();
+        p.setBrush(Qt::NoBrush);
+        p.setPen(QPen(m_colorPen,2));
+        double r = sqrt((pt.x()-prev_pt.x())*(pt.x()-prev_pt.x())+(pt.y()-prev_pt.y())*(pt.y()-prev_pt.y()));
+        p.drawEllipse(QPointF(prev_pt), r, r);
+      }
     }
   }
   if (!m_sMessage.isEmpty())
@@ -157,13 +188,19 @@ void WidgetImageView::mouseReleaseEvent(QMouseEvent *e)
   QPoint dpt = e->pos() - m_ptPress;
   if (m_bDrawing && !m_imageScaled.isNull())
   {
-    if (m_nEditMode == EM_POINT && qAbs(dpt.x()) < 2 && qAbs(dpt.y()) < 2)
+    if ((m_nEditMode == EM_POINT || m_nEditMode == EM_CALIBRATION) && qAbs(dpt.x()) < 2 && qAbs(dpt.y()) < 2)
     {
       QPoint pt = ScreenToImage(m_ptPress);
       if (m_listPoints.size() < m_nNumberOfExpectedPoints)
+      {
         m_listPoints << pt;
+      }
       else
         m_listPoints[m_nNumberOfExpectedPoints-1] = pt;
+
+      if (m_listPoints.size() == m_nNumberOfExpectedPoints && m_nEditMode == EM_CALIBRATION)
+        emit CalibrationReady(m_listPoints);
+
       update();
     }
     else if (m_nEditMode == EM_REGION)
@@ -251,12 +288,13 @@ void WidgetImageView::UpdateScaledImage(bool bSmooth)
   update();
 }
 
-void WidgetImageView::Clear()
+void WidgetImageView::ClearEdits()
 {
   m_listPoints.clear();
   m_listRegions.clear();
   m_imageOverlay = QImage();
   PrepareImage();
   UpdateScaledImage();
+  HideMessage();
   update();
 }

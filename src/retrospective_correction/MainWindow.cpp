@@ -118,7 +118,7 @@ void MainWindow::SetupScriptPath()
   if (!QFile::exists(m_strPyScriptPath))
   {
     QMessageBox::critical(this, "Error", tr("Could not locate %1 script").arg(SCRIPT_FILENAME));
-    qApp->quit();
+    QTimer::singleShot(0, qApp, SLOT(quit()));
   }
 }
 
@@ -236,7 +236,7 @@ void MainWindow::OnProcessErrorMessage()
 
 void MainWindow::OnButtonClear()
 {
-  ui->widgetImageView->Clear();
+  ui->widgetImageView->ClearEdits();
   ui->pushButtonNext->setEnabled(false);
 }
 
