@@ -41,8 +41,10 @@ MainWindow::MainWindow(QWidget *parent)
   connect(ui->widgetImageView, SIGNAL(CalibrationReady(QList<QPoint>)), SLOT(OnCalibrationReady(QList<QPoint>)));
 
   setWindowTitle(WND_TITLE);
+
   QSettings s;
   QRect rc = s.value("MainWindow/Geometry").toRect();
+  m_strLastDir = s.value("LastDir").toString();
   if (rc.isValid() && QApplication::desktop()->screenGeometry(this).contains(rc))
     setGeometry(rc);
 
@@ -58,6 +60,7 @@ MainWindow::~MainWindow()
 {
   QSettings s;
   s.setValue("MainWindow/Geometry", geometry());
+  s.setValue("LastDir", m_strLastDir);
 
   if (m_proc && m_proc->state() == QProcess::Running)
   {
@@ -116,7 +119,7 @@ void MainWindow::OnProcessStarted()
 void MainWindow::OnProcessFinished()
 {
   ui->widgetImageView->setEnabled(true);
-  ui->widgetImageView->ShowMessage("Calibration file saved");
+//  ui->widgetImageView->ShowMessage("Calibration file saved");
 }
 
 void MainWindow::OnProcessOutputMessage()
@@ -147,28 +150,30 @@ void MainWindow::OnButtonLoad()
     ui->widgetImageView->LoadImage(fn);
     ui->widgetImageView->ClearEdits();
     ui->pushButtonGo->setEnabled(false);
+    m_strLastDir = QFileInfo(fn).absolutePath();
   }
 }
 
 void MainWindow::OnButtonGo()
 {
+  double w = 1, h = 1;
+  bool bOK;
+  w = ui->lineEditWidth->text().trimmed().toDouble(&bOK);
+  if (bOK)
+    h = ui->lineEditHeight->text().trimmed().toDouble(&bOK);
+  if (!bOK)
+  {
+    QMessageBox::warning(this, "Error", "Please enter valid width and height");
+    return;
+  }
+
   QString fn = QFileDialog::getSaveFileName(this, "Specify Output npz File", m_strLastDir, "*.npz");
   if (!fn.isEmpty())
   {
     QStringList cmd;
     QStringList list;
-    double w = 1, h = 1;
     foreach (QPoint pt, m_listPoints)
       list << QString::number(pt.x()) << QString::number(pt.y());
-    bool bOK;
-    w = ui->lineEditWidth->text().trimmed().toDouble(&bOK);
-    if (bOK)
-      h = ui->lineEditHeight->text().trimmed().toDouble(&bOK);
-    if (!bOK)
-    {
-      QMessageBox::warning(this, "Error", "Please enter valid width and height");
-      return;
-    }
     cmd << m_strPythonCmd << m_strPyScriptPath
         << "--in_img" << ui->widgetImageView->GetFilename()
         << "--points" << list.join(" ")
