@@ -113,6 +113,9 @@ Click &quot;Perform Calibration&quot; after you select all 4 corners. </string>
        </property>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout">
+         <property name="spacing">
+          <number>3</number>
+         </property>
          <item>
           <spacer name="horizontalSpacer">
            <property name="orientation">
@@ -156,7 +159,7 @@ Click &quot;Perform Calibration&quot; after you select all 4 corners. </string>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
-             <width>35</width>
+             <width>25</width>
              <height>10</height>
             </size>
            </property>
@@ -220,6 +223,16 @@ Click &quot;Perform Calibration&quot; after you select all 4 corners. </string>
           </widget>
          </item>
          <item>
+          <widget class="QPushButton" name="pushButtonLoadImage">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="text">
+            <string>Reload Image</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <spacer name="horizontalSpacer_5">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
@@ -229,21 +242,11 @@ Click &quot;Perform Calibration&quot; after you select all 4 corners. </string>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
-             <width>30</width>
+             <width>50</width>
              <height>10</height>
             </size>
            </property>
           </spacer>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButtonLoadImage">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="text">
-            <string>Reload Image</string>
-           </property>
-          </widget>
          </item>
          <item>
           <widget class="QPushButton" name="pushButtonGo">

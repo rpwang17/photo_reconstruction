@@ -119,7 +119,7 @@ void MainWindow::OnProcessStarted()
 void MainWindow::OnProcessFinished()
 {
   ui->widgetImageView->setEnabled(true);
-//  ui->widgetImageView->ShowMessage("Calibration file saved");
+  ui->widgetImageView->HideMessage();
 }
 
 void MainWindow::OnProcessOutputMessage()

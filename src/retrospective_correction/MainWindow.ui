@@ -94,6 +94,9 @@
        </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout">
+         <property name="spacing">
+          <number>3</number>
+         </property>
          <item>
           <spacer name="horizontalSpacer">
            <property name="orientation">
@@ -110,7 +113,7 @@
          <item>
           <widget class="QLabel" name="label">
            <property name="text">
-            <string>Ruler Length (mm):</string>
+            <string>Ruler Width (mm):</string>
            </property>
           </widget>
          </item>
@@ -118,7 +121,7 @@
           <widget class="QLineEdit" name="lineEditRulerWidth">
            <property name="maximumSize">
             <size>
-             <width>60</width>
+             <width>40</width>
              <height>16777215</height>
             </size>
            </property>
@@ -134,7 +137,7 @@
            </property>
            <property name="sizeHint" stdset="0">
             <size>
-             <width>15</width>
+             <width>20</width>
              <height>5</height>
             </size>
            </property>
@@ -151,7 +154,7 @@
           <widget class="QLineEdit" name="lineEditRulerHeight">
            <property name="maximumSize">
             <size>
-             <width>60</width>
+             <width>40</width>
              <height>16777215</height>
             </size>
            </property>
@@ -204,7 +207,7 @@
            </property>
            <property name="sizeHint" stdset="0">
             <size>
-             <width>30</width>
+             <width>45</width>
              <height>6</height>
             </size>
            </property>
@@ -286,7 +289,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>20</height>
     </rect>
    </property>
   </widget>
