@@ -32,8 +32,8 @@ def retrospective_correction(args):
     if not os.path.exists(args.out_dir):
         os.makedirs(args.out_dir, exist_ok=True)
 
-    args.horizontal_ruler = cv2.imread("./horizontal.png")
-    args.vertical_ruler = cv2.imread("./vertical.png")
+    args.horizontal_ruler = cv2.imread("./resources/horizontal.png")
+    args.vertical_ruler = cv2.imread("./resources/vertical.png")
 
     # read the image
     input_path, input_ext = os.path.splitext(args.in_img)

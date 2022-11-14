@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>575</width>
+    <width>562</width>
     <height>282</height>
    </rect>
   </property>
@@ -260,7 +260,7 @@
      <y>28</y>
     </hint>
     <hint type="destinationlabel">
-     <x>695</x>
+     <x>561</x>
      <y>87</y>
     </hint>
    </hints>
@@ -276,7 +276,7 @@
      <y>114</y>
     </hint>
     <hint type="destinationlabel">
-     <x>707</x>
+     <x>561</x>
      <y>194</y>
     </hint>
    </hints>
@@ -288,12 +288,12 @@
    <slot>OnButtonRegister()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>311</x>
-     <y>229</y>
+     <x>320</x>
+     <y>265</y>
     </hint>
     <hint type="destinationlabel">
      <x>329</x>
-     <y>354</y>
+     <y>281</y>
     </hint>
    </hints>
   </connection>

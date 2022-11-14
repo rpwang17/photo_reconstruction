@@ -40,7 +40,7 @@ void DialogSelectFolder::OnButtonInputPath()
   if (!path.isEmpty())
   {
     ui->lineEditPathInput->setText(path);
-    ui->lineEditPathInput->setCursorPosition( ui->lineEditPathInput->text().size() );
+    ui->lineEditPathInput->setCursorPosition(path.size());
   }
 }
 
@@ -50,7 +50,7 @@ void DialogSelectFolder::OnButtonOutputPath()
   if (!path.isEmpty())
   {
     ui->lineEditPathOutput->setText(path);
-    ui->lineEditPathOutput->setCursorPosition( ui->lineEditPathOutput->text().size() );
+    ui->lineEditPathOutput->setCursorPosition(path.size());
   }
 }
 

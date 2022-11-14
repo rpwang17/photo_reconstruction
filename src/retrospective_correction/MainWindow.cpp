@@ -101,8 +101,8 @@ void MainWindow::SetupScriptPath()
   file.open(QFile::ReadOnly | QFile::Text);
   QTextStream in(&file);
   QString str = in.readAll();
-  str.replace("./horizontal.png", QFileInfo(dir.path(),"horizontal.png").absoluteFilePath());
-  str.replace("./vertical.png", QFileInfo(dir.path(),"vertical.png").absoluteFilePath());
+  str.replace("./resources/horizontal.png", QFileInfo(dir.path(),"horizontal.png").absoluteFilePath());
+  str.replace("./resources/vertical.png", QFileInfo(dir.path(),"vertical.png").absoluteFilePath());
   QFile file2(QFileInfo(dir.path(),SCRIPT_FILENAME).absoluteFilePath());
   if (file2.open(QFile::ReadWrite))
   {
