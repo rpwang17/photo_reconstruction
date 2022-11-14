@@ -25,6 +25,9 @@ public slots:
   void OnButtonCalibrationFile();
   void OnButtonProcess();
 
+  void OnProcessOutputMessage();
+  void OnProcessErrorMessage();
+
 public:
   QString m_strPythonCmd;
 

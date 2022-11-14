@@ -34,6 +34,8 @@ MainWindow::MainWindow(QWidget *parent)
   m_proc = new QProcess(this);
   connect(m_proc, SIGNAL(started()), SLOT(UpdateWidgets()), Qt::QueuedConnection);
   connect(m_proc, SIGNAL(finished(int,QProcess::ExitStatus)), SLOT(UpdateWidgets()));
+  connect(m_proc, SIGNAL(readyReadStandardOutput()), SLOT(OnProcessOutputMessage()));
+  connect(m_proc, SIGNAL(readyReadStandardError()), SLOT(OnProcessErrorMessage()));
 
   UpdateWidgets();
 }
@@ -99,6 +101,7 @@ void MainWindow::SetupScriptPath()
   QFile::copy(":/horizontal.png", QFileInfo(dir.path(),"horizontal.png").absoluteFilePath());
   QFile::copy(":/vertical.png", QFileInfo(dir.path(),"vertical.png").absoluteFilePath());
   m_strPyScriptPath = QFileInfo(dir.path(),SCRIPT_FILENAME).absoluteFilePath();
+  QFile::copy(":/registration.py", QFileInfo(dir.path(),"registration.py").absoluteFilePath());
 
   if (!QFile::exists(m_strPyScriptPath))
   {
@@ -155,9 +158,24 @@ void MainWindow::OnButtonProcess()
 {
   QStringList cmd;
   cmd << m_strPythonCmd << m_strPyScriptPath
-      << "--in_img" << ui->lineEditInputFolder->text().trimmed()
-      << "--calibratoin_file" << ui->lineEditCalibrationFile->text().trimmed()
+      << "--in_dir" << ui->lineEditInputFolder->text().trimmed()
+      << "--calibration_file" << ui->lineEditCalibrationFile->text().trimmed()
       << "--out_dir" << ui->lineEditOutputFolder->text().trimmed();
-  qDebug() << cmd.join(" ");
+//  qDebug() << cmd.join(" ");
   m_proc->start(cmd.join(" "));
 }
+
+void MainWindow::OnProcessOutputMessage()
+{
+  qDebug() << m_proc->readAllStandardOutput();
+}
+
+void MainWindow::OnProcessErrorMessage()
+{
+    QString str = m_proc->readAllStandardError().trimmed();
+    if (!str.isEmpty())
+    {
+      qDebug() << str;
+    }
+}
+
